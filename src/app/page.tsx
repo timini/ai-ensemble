@@ -2,7 +2,7 @@
 
 import { Header } from "./_components/Header";
 import { QueryForm } from "./_components/QueryForm";
-import { EnsembleResponse } from "./_components/EnsembleResponse";
+import { StreamingResponse } from "./_components/StreamingResponse";
 import { useEnsembleState } from "./_hooks/useEnsembleState";
 
 export default function Home() {
@@ -13,6 +13,7 @@ export default function Home() {
     keyStatus, handleValidateKey,
     summarizerSelection, setSummarizerSelection,
     handleSubmit,
+    handleStreamingSubmit,
     ensembleQuery,
     validProviders,
     modelLists,
@@ -20,6 +21,8 @@ export default function Home() {
     validationInProgress,
     modelsLoading,
     isKeyVisible, setIsKeyVisible,
+    isStreaming,
+    streamingData,
   } = useEnsembleState();
 
   return (
@@ -38,6 +41,7 @@ export default function Home() {
           summarizerSelection={summarizerSelection}
           setSummarizerSelection={setSummarizerSelection}
           handleSubmit={handleSubmit}
+          handleStreamingSubmit={handleStreamingSubmit}
           ensembleQueryIsPending={ensembleQuery.isPending}
           validProviders={validProviders}
           modelLists={modelLists}
@@ -47,11 +51,16 @@ export default function Home() {
           isKeyVisible={isKeyVisible}
           // eslint-disable-next-line @typescript-eslint/no-unused-expressions
           toggleKeyVisibility={(p) => setIsKeyVisible(prev => { const s = new Set(prev); s.has(p) ? s.delete(p) : s.add(p); return s; })}
+          isStreaming={isStreaming}
         />
         <div className="mt-8">
-          {ensembleQuery.isPending && <p className="text-center">Querying the ensemble...</p>}
-          {ensembleQuery.error && <div className="bg-red-900/50 border border-red-500 p-4 rounded-lg text-red-200"><p className="font-bold">An error occurred:</p><p>{ensembleQuery.error.message}</p></div>}
-          {ensembleQuery.data && <EnsembleResponse data={ensembleQuery.data} consensusDiagram={<ConsensusDiagram scores={ensembleQuery.data.agreementScores} />} />}
+          {/* Streaming responses */}
+          {(isStreaming || streamingData.consensusState === 'complete') && (
+            <StreamingResponse 
+              streamingData={streamingData} 
+              consensusDiagram={streamingData.agreementScores ? <ConsensusDiagram scores={streamingData.agreementScores} /> : null} 
+            />
+          )}
         </div>
       </div>
     </main>

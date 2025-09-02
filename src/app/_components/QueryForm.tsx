@@ -17,6 +17,7 @@ interface QueryFormProps {
   summarizerSelection: string;
   setSummarizerSelection: (selection: string) => void;
   handleSubmit: (e: React.FormEvent) => void;
+  handleStreamingSubmit: (e: React.FormEvent) => Promise<void>;
   ensembleQueryIsPending: boolean;
   validProviders: Provider[];
   modelLists: Record<Provider, string[]>;
@@ -25,9 +26,10 @@ interface QueryFormProps {
   modelsLoading: Set<Provider>;
   isKeyVisible: Set<Provider>;
   toggleKeyVisibility: (provider: Provider) => void;
+  isStreaming: boolean;
 }
 
-export function QueryForm({ prompt, setPrompt, keys, handleKeyChange, models, handleModelChange, keyStatus, handleValidateKey, summarizerSelection, setSummarizerSelection, handleSubmit, ensembleQueryIsPending, validProviders, modelLists, initialLoad, validationInProgress, modelsLoading, isKeyVisible, toggleKeyVisibility }: QueryFormProps) {
+export function QueryForm({ prompt, setPrompt, keys, handleKeyChange, models, handleModelChange, keyStatus, handleValidateKey, summarizerSelection, setSummarizerSelection, handleSubmit: _handleSubmit, handleStreamingSubmit, ensembleQueryIsPending: _ensembleQueryIsPending, validProviders, modelLists, initialLoad, validationInProgress, modelsLoading, isKeyVisible, toggleKeyVisibility, isStreaming }: QueryFormProps) {
   return (
     <>
       <ApiConfiguration
@@ -45,8 +47,9 @@ export function QueryForm({ prompt, setPrompt, keys, handleKeyChange, models, ha
         toggleKeyVisibility={toggleKeyVisibility}
       />
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleStreamingSubmit} className="flex flex-col gap-4">
         <PromptInput prompt={prompt} setPrompt={setPrompt} />
+
         <div className="flex flex-wrap items-center justify-between gap-4">
           <SummarizerSelection
             summarizerSelection={summarizerSelection}
@@ -54,7 +57,13 @@ export function QueryForm({ prompt, setPrompt, keys, handleKeyChange, models, ha
             validProviders={validProviders}
             modelLists={modelLists}
           />
-          <button type="submit" disabled={ensembleQueryIsPending || !prompt || validProviders.length === 0} className="bg-[hsl(280,100%,70%)] text-white font-bold py-2 px-6 rounded-lg hover:bg-[hsl(280,100%,60%)] disabled:bg-gray-600 disabled:cursor-not-allowed">{ensembleQueryIsPending ? "Processing..." : "Submit"}</button>
+          <button 
+            type="submit" 
+            disabled={isStreaming || !prompt || validProviders.length === 0} 
+            className="bg-[hsl(280,100%,70%)] text-white font-bold py-2 px-6 rounded-lg hover:bg-[hsl(280,100%,60%)] disabled:bg-gray-600 disabled:cursor-not-allowed"
+          >
+            {isStreaming ? "Streaming..." : "Stream Response"}
+          </button>
         </div>
       </form>
     </>

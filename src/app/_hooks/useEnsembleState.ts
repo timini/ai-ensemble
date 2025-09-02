@@ -15,6 +15,20 @@ export function useEnsembleState() {
   const [modelLists, setModelLists] = useState<Record<Provider, string[]>>(FALLBACK_MODELS);
   const [summarizerSelection, setSummarizerSelection] = useState("");
   const [initialLoad, setInitialLoad] = useState(true);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [streamingData, setStreamingData] = useState<{
+    individualResponses: Record<Provider, string>;
+    consensusResponse: string;
+    agreementScores: { og: number; ga: number; ao: number } | null;
+    providerStates: Record<Provider, 'pending' | 'streaming' | 'complete' | 'error'>;
+    consensusState: 'pending' | 'streaming' | 'complete';
+  }>({
+    individualResponses: { openai: '', google: '', anthropic: '' },
+    consensusResponse: '',
+    agreementScores: null,
+    providerStates: { openai: 'pending', google: 'pending', anthropic: 'pending' },
+    consensusState: 'pending'
+  });
 
   const utils = api.useUtils();
 
@@ -130,6 +144,124 @@ export function useEnsembleState() {
     }
   }, [validProviders, modelLists, summarizerSelection]);
 
+  const handleStreamingSubmit = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!summarizerSelection || isStreaming) return;
+    
+    const [provider, model] = summarizerSelection.split(":");
+    if (!provider || !model) return;
+
+    setIsStreaming(true);
+    setStreamingData({
+      individualResponses: { openai: '', google: '', anthropic: '' },
+      consensusResponse: '',
+      agreementScores: null,
+      providerStates: { openai: 'pending', google: 'pending', anthropic: 'pending' },
+      consensusState: 'pending'
+    });
+
+    try {
+      const response = await fetch('/api/ensemble-stream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt,
+          keys,
+          models,
+          summarizer: { provider: provider as Provider, model }
+        }),
+      });
+
+      if (!response.body) throw new Error('No response body');
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              
+              switch (data.type) {
+                case 'provider_start':
+                  setStreamingData(prev => ({
+                    ...prev,
+                    providerStates: { ...prev.providerStates, [data.provider]: 'streaming' }
+                  }));
+                  break;
+                
+                case 'chunk':
+                  setStreamingData(prev => ({
+                    ...prev,
+                    individualResponses: {
+                      ...prev.individualResponses,
+                      [data.provider]: prev.individualResponses[data.provider] + data.content
+                    }
+                  }));
+                  break;
+
+                case 'provider_complete':
+                  setStreamingData(prev => ({
+                    ...prev,
+                    providerStates: { ...prev.providerStates, [data.provider]: 'complete' }
+                  }));
+                  break;
+
+                case 'provider_error':
+                  setStreamingData(prev => ({
+                    ...prev,
+                    providerStates: { ...prev.providerStates, [data.provider]: 'error' }
+                  }));
+                  break;
+
+                case 'agreement':
+                  setStreamingData(prev => ({
+                    ...prev,
+                    agreementScores: data.scores
+                  }));
+                  break;
+
+                case 'consensus_start':
+                  setStreamingData(prev => ({
+                    ...prev,
+                    consensusState: 'streaming'
+                  }));
+                  break;
+
+                case 'consensus_chunk':
+                  setStreamingData(prev => ({
+                    ...prev,
+                    consensusResponse: prev.consensusResponse + data.content
+                  }));
+                  break;
+
+                case 'complete':
+                  setStreamingData(prev => ({
+                    ...prev,
+                    consensusState: 'complete'
+                  }));
+                  break;
+              }
+            } catch (e) {
+              console.error('Error parsing SSE data:', e);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Streaming error:', error);
+    } finally {
+      setIsStreaming(false);
+    }
+  }, [prompt, keys, models, summarizerSelection, isStreaming]);
+
   return {
     prompt, setPrompt,
     keys, handleKeyChange,
@@ -137,6 +269,7 @@ export function useEnsembleState() {
     keyStatus, handleValidateKey,
     summarizerSelection, setSummarizerSelection,
     handleSubmit,
+    handleStreamingSubmit,
     ensembleQuery,
     validProviders,
     modelLists,
@@ -144,5 +277,7 @@ export function useEnsembleState() {
     validationInProgress,
     modelsLoading,
     isKeyVisible, setIsKeyVisible,
+    isStreaming,
+    streamingData,
   };
 }

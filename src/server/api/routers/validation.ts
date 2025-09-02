@@ -66,15 +66,18 @@ async function fetchGoogleModels(key: string) {
       return GOOGLE_MODELS;
     }
     
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const data = await response.json();
     console.log("Google API response:", data);
     
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (!data.models) {
       console.log("No models found in response, using fallback list");
       return GOOGLE_MODELS;
     }
     
     // Filter for Gemini models that support generateContent
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any */
     const geminiModels = data.models
       .filter((model: any) => {
         const modelName = model.name?.replace('models/', '');
@@ -85,10 +88,12 @@ async function fetchGoogleModels(key: string) {
       .map((model: any) => model.name?.replace('models/', ''))
       .sort()
       .reverse(); // Latest models first
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any */
     
     console.log("Filtered Gemini models:", geminiModels);
     
     // Return the dynamic list if we found models, otherwise fallback
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
     return geminiModels.length > 0 ? geminiModels : GOOGLE_MODELS;
   } catch (error) {
     console.error("Error fetching Google models:", error);
@@ -131,6 +136,7 @@ export const validationRouter = createTRPCRouter({
     .query(async ({ input }) => {
         try {
             if (input.provider === 'openai') return await fetchOpenAIModels(input.key);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             if (input.provider === 'google') return await fetchGoogleModels(input.key);
             if (input.provider === 'anthropic') return ANTHROPIC_MODELS;
         } catch (error) {
@@ -199,6 +205,7 @@ export const validationRouter = createTRPCRouter({
 
         const modelLists = {
             openai: modelListsResults[0].status === 'fulfilled' ? modelListsResults[0].value : FALLBACK_MODELS.openai,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             google: modelListsResults[1].status === 'fulfilled' ? modelListsResults[1].value : GOOGLE_MODELS,
             anthropic: modelListsResults[2].status === 'fulfilled' ? modelListsResults[2].value : ANTHROPIC_MODELS,
         };

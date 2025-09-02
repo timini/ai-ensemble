@@ -15,6 +15,18 @@ export class GoogleProvider implements IAIProvider {
     return result.response.text() ?? "";
   }
 
+  async *generateContentStream(prompt: string, modelName = "gemini-1.5-flash"): AsyncIterable<string> {
+    const model = this.genAI.getGenerativeModel({ model: modelName });
+    const result = await model.generateContentStream(prompt);
+
+    for await (const chunk of result.stream) {
+      const chunkText = chunk.text();
+      if (chunkText) {
+        yield chunkText;
+      }
+    }
+  }
+
   async createEmbedding(input: string[]): Promise<number[][]> {
     // Google Generative AI does not have a direct embedding API for multiple inputs like OpenAI
     // For simplicity in this example, we'll return empty arrays or throw an error.
