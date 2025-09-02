@@ -14,23 +14,32 @@ export async function calculateAgreement(
 ): Promise<{ og: number; ga: number; ao: number }> {
   try {
     const texts = [responses.openai, responses.google, responses.anthropic];
+    console.log("calculateAgreement: Input texts lengths:", texts.map(t => t.length));
     
     // Don't make an API call if any of the inputs are empty or just error messages
     if (texts.some(t => !t || t.startsWith("Error:"))) {
+        console.log("calculateAgreement: Skipping due to empty or error texts");
         return { og: 0, ga: 0, ao: 0 };
     }
 
+    console.log("calculateAgreement: Calling createEmbedding...");
     const embeddingResponse = await openaiProvider.createEmbedding(texts);
+    console.log("calculateAgreement: Received embeddings:", embeddingResponse.length, "vectors");
 
     const [vecO, vecG, vecA] = embeddingResponse;
 
     if (!vecO || !vecG || !vecA) {
+        console.log("calculateAgreement: Missing vectors:", { vecO: !!vecO, vecG: !!vecG, vecA: !!vecA });
         return { og: 0, ga: 0, ao: 0 };
     }
+
+    console.log("calculateAgreement: Vector dimensions:", vecO.length, vecG.length, vecA.length);
 
     const og = cosineSimilarity(vecO, vecG);
     const ga = cosineSimilarity(vecG, vecA);
     const ao = cosineSimilarity(vecA, vecO);
+
+    console.log("calculateAgreement: Calculated scores:", { og, ga, ao });
 
     return { og, ga, ao };
   } catch (error) {

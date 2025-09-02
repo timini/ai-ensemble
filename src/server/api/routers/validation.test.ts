@@ -108,39 +108,16 @@ describe('Validation Router', () => {
       expect(models).toEqual(['gpt-4', 'gpt-3.5-turbo']);
     });
 
-    it('should return google models dynamically', async () => {
-      // Mock the Google AI listModels method
-      const mockListModels = vi.fn().mockResolvedValue([
-        { 
-          name: 'models/gemini-2.5-flash-exp', 
-          supportedGenerationMethods: ['generateContent'] 
-        },
-        { 
-          name: 'models/gemini-2.0-flash-exp', 
-          supportedGenerationMethods: ['generateContent'] 
-        },
-        { 
-          name: 'models/gemini-1.5-pro', 
-          supportedGenerationMethods: ['generateContent'] 
-        },
-        { 
-          name: 'models/text-embedding-004', 
-          supportedGenerationMethods: ['embedContent'] 
-        }
-      ]);
-      
-      // Mock the GoogleGenerativeAI constructor and listModels
-      const mockGoogleAI = {
-        listModels: mockListModels
-      };
-      (GoogleGenerativeAI as any).mockImplementation(() => mockGoogleAI);
-      
+    it('should return google models from hardcoded list', async () => {
       const models = await caller.getModels({ provider: 'google', key: 'test-key' });
-      // Should only include gemini models with generateContent support, excluding embedding models
+      // Since dynamic fetching is not implemented, should return hardcoded list
       expect(models).toEqual([
-        'gemini-2.5-flash-exp',
-        'gemini-2.0-flash-exp', 
-        'gemini-1.5-pro'
+        "gemini-1.5-pro-latest",
+        "gemini-1.5-flash-latest",
+        "gemini-1.5-pro",
+        "gemini-1.5-flash",
+        "gemini-1.5-flash-8b-latest",
+        "gemini-1.5-flash-8b"
       ]);
     });
 
@@ -191,7 +168,14 @@ describe('Validation Router', () => {
 
         const result = await caller.validateAllKeys({ openai: 'o-key', google: 'g-key', anthropic: 'a-key' });
         expect(result.modelLists.openai).toEqual(['gpt-4']);
-        expect(result.modelLists.google).toEqual(["gemini-1.5-pro-latest", "gemini-1.5-flash-latest"]);
+        expect(result.modelLists.google).toEqual([
+          "gemini-1.5-pro-latest",
+          "gemini-1.5-flash-latest",
+          "gemini-1.5-pro",
+          "gemini-1.5-flash",
+          "gemini-1.5-flash-8b-latest",
+          "gemini-1.5-flash-8b"
+        ]);
         expect(result.modelLists.anthropic).toEqual(["claude-3-opus-20240229", "claude-3-sonnet-20240229", "claude-3-haiku-20240307"]);
     });
   });

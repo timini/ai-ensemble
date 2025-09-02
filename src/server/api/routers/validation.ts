@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/prefer-promise-reject-errors */
+
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import OpenAI from "openai";
@@ -13,12 +13,12 @@ const ProviderEnum = z.enum(["openai", "google", "anthropic"]);
 // Hardcoded lists as fallback and for providers without a list API
 // Only text generation models - excluding image, embedding, or other non-text models
 const GOOGLE_MODELS = [
-  "gemini-2.5-flash-exp",
-  "gemini-2.0-flash-exp", 
-  "gemini-1.5-pro-latest", 
+  "gemini-1.5-pro-latest",
   "gemini-1.5-flash-latest",
   "gemini-1.5-pro",
-  "gemini-1.5-flash"
+  "gemini-1.5-flash",
+  "gemini-1.5-flash-8b-latest",
+  "gemini-1.5-flash-8b"
 ];
 const ANTHROPIC_MODELS = ["claude-3-opus-20240229", "claude-3-sonnet-20240229", "claude-3-haiku-20240307"];
 
@@ -54,19 +54,10 @@ async function validateGoogle(key: string) {
   await model.countTokens("test");
 }
 
-async function fetchGoogleModels(key: string) {
-  const genAI = new GoogleGenerativeAI(key);
-  const models = await genAI.listModels();
-  return models
-    .filter(model => {
-      // Only include text generation models, exclude embedding and other non-text models
-      return model.name.includes("gemini") && 
-             model.supportedGenerationMethods?.includes("generateContent") &&
-             !model.name.includes("embedding");
-    })
-    .map(model => model.name.replace("models/", "")) // Remove "models/" prefix
-    .sort()
-    .reverse(); // Latest models first
+async function fetchGoogleModels(_key: string) {
+  // TODO: Implement dynamic model fetching when Google provides an official API
+  // For now, return the hardcoded list as the Google SDK doesn't expose listModels method
+  return GOOGLE_MODELS;
 }
 
 async function validateAnthropic(key: string) {
@@ -157,7 +148,7 @@ export const validationRouter = createTRPCRouter({
         };
 
         // Update statuses based on validation results
-        keyMappings.forEach((mapping, i) => {
+        keyMappings.forEach((mapping) => {
             const result = results[mapping.index];
             statuses[mapping.provider] = result?.status === 'fulfilled' ? 'valid' : 'invalid';
         });
