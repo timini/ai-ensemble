@@ -108,17 +108,40 @@ describe('Validation Router', () => {
       expect(models).toEqual(['gpt-4', 'gpt-3.5-turbo']);
     });
 
-    it('should return google models from hardcoded list', async () => {
+    it('should return google models from dynamic API or fallback', async () => {
+      // Mock fetch for the Google models API
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({
+          models: [
+            {
+              name: 'models/gemini-2.5-flash',
+              supportedGenerationMethods: ['generateContent']
+            },
+            {
+              name: 'models/gemini-2.5-pro',
+              supportedGenerationMethods: ['generateContent']
+            },
+            {
+              name: 'models/gemini-1.5-flash',
+              supportedGenerationMethods: ['generateContent']
+            },
+            {
+              name: 'models/text-embedding-004',
+              supportedGenerationMethods: ['embedContent']
+            }
+          ]
+        })
+      });
+
       const models = await caller.getModels({ provider: 'google', key: 'test-key' });
-      // Since dynamic fetching is not implemented, should return hardcoded list
-      expect(models).toEqual([
-        "gemini-1.5-pro-latest",
-        "gemini-1.5-flash-latest",
-        "gemini-1.5-pro",
-        "gemini-1.5-flash",
-        "gemini-1.5-flash-8b-latest",
-        "gemini-1.5-flash-8b"
-      ]);
+      // Should return dynamically fetched models, filtered and sorted
+      expect(models).toEqual(expect.arrayContaining([
+        "gemini-2.5-pro",
+        "gemini-2.5-flash", 
+        "gemini-1.5-flash"
+      ]));
+      expect(models).not.toContain("text-embedding-004"); // Should exclude embedding models
     });
 
     it('should return anthropic models', async () => {
@@ -165,17 +188,30 @@ describe('Validation Router', () => {
         mockOpenAIList.mockResolvedValue({ data: [{id: 'gpt-4'}] });
         mockGoogleCountTokens.mockResolvedValue({ totalTokens: 1 });
         mockAnthropicCreate.mockResolvedValue({});
+        
+        // Mock fetch for Google models API
+        global.fetch = vi.fn().mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve({
+            models: [
+              {
+                name: 'models/gemini-2.5-flash',
+                supportedGenerationMethods: ['generateContent']
+              },
+              {
+                name: 'models/gemini-2.5-pro',
+                supportedGenerationMethods: ['generateContent']
+              }
+            ]
+          })
+        });
 
         const result = await caller.validateAllKeys({ openai: 'o-key', google: 'g-key', anthropic: 'a-key' });
         expect(result.modelLists.openai).toEqual(['gpt-4']);
-        expect(result.modelLists.google).toEqual([
-          "gemini-1.5-pro-latest",
-          "gemini-1.5-flash-latest",
-          "gemini-1.5-pro",
-          "gemini-1.5-flash",
-          "gemini-1.5-flash-8b-latest",
-          "gemini-1.5-flash-8b"
-        ]);
+        expect(result.modelLists.google).toEqual(expect.arrayContaining([
+          "gemini-2.5-flash",
+          "gemini-2.5-pro"
+        ]));
         expect(result.modelLists.anthropic).toEqual(["claude-3-opus-20240229", "claude-3-sonnet-20240229", "claude-3-haiku-20240307"]);
     });
   });

@@ -13,6 +13,8 @@ const ProviderEnum = z.enum(["openai", "google", "anthropic"]);
 // Hardcoded lists as fallback and for providers without a list API
 // Only text generation models - excluding image, embedding, or other non-text models
 const GOOGLE_MODELS = [
+  "gemini-2.5-flash",
+  "gemini-2.5-pro", 
   "gemini-1.5-pro-latest",
   "gemini-1.5-flash-latest",
   "gemini-1.5-pro",
@@ -54,10 +56,44 @@ async function validateGoogle(key: string) {
   await model.countTokens("test");
 }
 
-async function fetchGoogleModels(_key: string) {
-  // TODO: Implement dynamic model fetching when Google provides an official API
-  // For now, return the hardcoded list as the Google SDK doesn't expose listModels method
-  return GOOGLE_MODELS;
+async function fetchGoogleModels(key: string) {
+  try {
+    // Use the REST API to fetch models since the SDK doesn't expose listModels
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
+    
+    if (!response.ok) {
+      console.log("Google models fetch failed, using fallback list");
+      return GOOGLE_MODELS;
+    }
+    
+    const data = await response.json();
+    console.log("Google API response:", data);
+    
+    if (!data.models) {
+      console.log("No models found in response, using fallback list");
+      return GOOGLE_MODELS;
+    }
+    
+    // Filter for Gemini models that support generateContent
+    const geminiModels = data.models
+      .filter((model: any) => {
+        const modelName = model.name?.replace('models/', '');
+        return modelName?.includes('gemini') && 
+               model.supportedGenerationMethods?.includes('generateContent') &&
+               !modelName?.includes('embedding');
+      })
+      .map((model: any) => model.name?.replace('models/', ''))
+      .sort()
+      .reverse(); // Latest models first
+    
+    console.log("Filtered Gemini models:", geminiModels);
+    
+    // Return the dynamic list if we found models, otherwise fallback
+    return geminiModels.length > 0 ? geminiModels : GOOGLE_MODELS;
+  } catch (error) {
+    console.error("Error fetching Google models:", error);
+    return GOOGLE_MODELS;
+  }
 }
 
 async function validateAnthropic(key: string) {
