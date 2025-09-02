@@ -8,7 +8,7 @@ import { TRPCError } from "@trpc/server";
 import { type Provider, type KeyStatus } from "~/app/_components/ProviderSettings";
 import { FALLBACK_MODELS } from "~/utils/constants";
 
-const ProviderEnum = z.enum(["openai", "google", "anthropic"]);
+const ProviderEnum = z.enum(["openai", "google", "anthropic", "grok"]);
 
 // Hardcoded lists as fallback and for providers without a list API
 // Only text generation models - excluding image, embedding, or other non-text models
@@ -23,6 +23,7 @@ const GOOGLE_MODELS = [
   "gemini-1.5-flash-8b"
 ];
 const ANTHROPIC_MODELS = ["claude-3-opus-20240229", "claude-3-sonnet-20240229", "claude-3-haiku-20240307"];
+const GROK_MODELS = ["grok-beta", "grok-2-latest", "grok-2-public-beta"];
 
 // --- Individual Validation/Fetching Logic (reused by the parallel procedure) ---
 
@@ -110,6 +111,25 @@ async function validateAnthropic(key: string) {
   });
 }
 
+async function validateGrok(key: string) {
+  const response = await fetch('https://api.x.ai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${key}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'grok-beta',
+      messages: [{ role: 'user', content: 'Test' }],
+      max_tokens: 1,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Grok API error: ${response.status} ${response.statusText}`);
+  }
+}
+
 
 export const validationRouter = createTRPCRouter({
   // (keeping individual validation for on-blur validation)
@@ -121,6 +141,7 @@ export const validationRouter = createTRPCRouter({
           case "openai": await validateOpenAI(input.key); break;
           case "google": await validateGoogle(input.key); break;
           case "anthropic": await validateAnthropic(input.key); break;
+          case "grok": await validateGrok(input.key); break;
         }
         return { success: true, error: null };
       } catch (error) {
@@ -139,6 +160,7 @@ export const validationRouter = createTRPCRouter({
             // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             if (input.provider === 'google') return await fetchGoogleModels(input.key);
             if (input.provider === 'anthropic') return ANTHROPIC_MODELS;
+            if (input.provider === 'grok') return GROK_MODELS;
         } catch (error) {
             throw new TRPCError({
                 code: 'BAD_REQUEST',
@@ -148,6 +170,7 @@ export const validationRouter = createTRPCRouter({
         // Return fallback on error or for unhandled providers
         if (input.provider === 'google') return GOOGLE_MODELS;
         if (input.provider === 'anthropic') return ANTHROPIC_MODELS;
+        if (input.provider === 'grok') return GROK_MODELS;
         return [];
     }),
 
@@ -157,6 +180,7 @@ export const validationRouter = createTRPCRouter({
         openai: z.string(),
         google: z.string(),
         anthropic: z.string(),
+        grok: z.string().optional().default(""),
     }))
     .mutation(async ({ input }) => {
         console.log("Entering validateAllKeys procedure. Input:", input);
@@ -177,6 +201,10 @@ export const validationRouter = createTRPCRouter({
             validationPromises.push(validateAnthropic(input.anthropic));
             keyMappings.push({ index: validationPromises.length - 1, provider: 'anthropic' });
         }
+        if (input.grok?.trim()) {
+            validationPromises.push(validateGrok(input.grok));
+            keyMappings.push({ index: validationPromises.length - 1, provider: 'grok' });
+        }
 
         console.log("Starting key validation with Promise.allSettled...");
         const results = await Promise.allSettled(validationPromises);
@@ -187,6 +215,7 @@ export const validationRouter = createTRPCRouter({
             openai: 'unchecked',
             google: 'unchecked',
             anthropic: 'unchecked',
+            grok: 'unchecked',
         };
 
         // Update statuses based on validation results
@@ -200,6 +229,7 @@ export const validationRouter = createTRPCRouter({
             statuses.openai === 'valid' ? fetchOpenAIModels(input.openai) : Promise.resolve(FALLBACK_MODELS.openai),
             statuses.google === 'valid' ? fetchGoogleModels(input.google) : Promise.resolve(GOOGLE_MODELS),
             statuses.anthropic === 'valid' ? Promise.resolve(ANTHROPIC_MODELS) : Promise.resolve(ANTHROPIC_MODELS),
+            statuses.grok === 'valid' ? Promise.resolve(GROK_MODELS) : Promise.resolve(GROK_MODELS),
         ]);
         console.log("Model list fetching results:", modelListsResults);
 
@@ -208,6 +238,7 @@ export const validationRouter = createTRPCRouter({
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             google: modelListsResults[1].status === 'fulfilled' ? modelListsResults[1].value : GOOGLE_MODELS,
             anthropic: modelListsResults[2].status === 'fulfilled' ? modelListsResults[2].value : ANTHROPIC_MODELS,
+            grok: modelListsResults[3].status === 'fulfilled' ? modelListsResults[3].value : GROK_MODELS,
         };
 
         console.log("Returning from validateAllKeys. Statuses:", statuses, "Model Lists:", modelLists);

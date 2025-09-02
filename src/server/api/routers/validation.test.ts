@@ -164,7 +164,7 @@ describe('Validation Router', () => {
       mockAnthropicCreate.mockResolvedValue({});
 
       const result = await caller.validateAllKeys({ openai: 'o-key', google: 'g-key', anthropic: 'a-key' });
-      expect(result.statuses).toEqual({ openai: 'valid', google: 'valid', anthropic: 'valid' });
+      expect(result.statuses).toEqual({ openai: 'valid', google: 'valid', anthropic: 'valid', grok: 'unchecked' });
     });
 
     it('should return invalid status for failed keys', async () => {
@@ -173,7 +173,7 @@ describe('Validation Router', () => {
         mockAnthropicCreate.mockResolvedValue({});
 
         const result = await caller.validateAllKeys({ openai: 'o-key', google: 'g-key', anthropic: 'a-key' });
-        expect(result.statuses).toEqual({ openai: 'valid', google: 'invalid', anthropic: 'valid' });
+        expect(result.statuses).toEqual({ openai: 'valid', google: 'invalid', anthropic: 'valid', grok: 'unchecked' });
     });
 
     it('should return unchecked status for missing keys', async () => {
@@ -181,7 +181,7 @@ describe('Validation Router', () => {
         mockAnthropicCreate.mockResolvedValue({});
 
         const result = await caller.validateAllKeys({ openai: 'o-key', google: '', anthropic: 'a-key' });
-        expect(result.statuses).toEqual({ openai: 'valid', google: 'unchecked', anthropic: 'valid' });
+        expect(result.statuses).toEqual({ openai: 'valid', google: 'unchecked', anthropic: 'valid', grok: 'unchecked' });
     });
 
     it('should return model lists', async () => {
@@ -213,6 +213,7 @@ describe('Validation Router', () => {
           "gemini-2.5-pro"
         ]));
         expect(result.modelLists.anthropic).toEqual(["claude-3-opus-20240229", "claude-3-sonnet-20240229", "claude-3-haiku-20240307"]);
+        expect(result.modelLists.grok).toEqual(["grok-beta", "grok-2-latest", "grok-2-public-beta"]);
     });
   });
 });

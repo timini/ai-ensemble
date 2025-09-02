@@ -7,6 +7,6 @@ describe('Header', () => {
 
     const heading = screen.getByRole('heading', { level: 1 });
     expect(heading).toHaveTextContent(/ai ensemble/i);
-    expect(screen.getByText('One Prompt, A Chorus of AIs.')).toBeInTheDocument();
+    expect(screen.getByText('Compare. Consensus. Confidence.')).toBeInTheDocument();
   });
 });

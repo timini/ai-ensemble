@@ -30,6 +30,34 @@ interface QueryFormProps {
 }
 
 export function QueryForm({ prompt, setPrompt, keys, handleKeyChange, models, handleModelChange, keyStatus, handleValidateKey, summarizerSelection, setSummarizerSelection, handleSubmit: _handleSubmit, handleStreamingSubmit, ensembleQueryIsPending: _ensembleQueryIsPending, validProviders, modelLists, initialLoad, validationInProgress, modelsLoading, isKeyVisible, toggleKeyVisibility, isStreaming }: QueryFormProps) {
+  // Calculate providers with actual API keys (not just validated)
+  const providersWithKeys = (Object.keys(keys) as Provider[]).filter(p => keys[p].trim().length > 0);
+  const missingProviders = (Object.keys(keys) as Provider[]).filter(p => keys[p].trim().length === 0);
+  
+  // Create validation message
+  const getValidationMessage = () => {
+    if (providersWithKeys.length === 0) {
+      return "Add at least one API key to start streaming responses";
+    }
+    if (!prompt.trim()) {
+      return "Enter a prompt to continue";
+    }
+    if (!summarizerSelection) {
+      return "Select a summarizer model to continue";
+    }
+    
+    // Show which providers are missing (as info, not blocking)
+    if (missingProviders.length > 0 && providersWithKeys.length > 0) {
+      const missingNames = missingProviders.map(p => p.charAt(0).toUpperCase() + p.slice(1));
+      return `Note: ${missingNames.join(', ')} ${missingProviders.length === 1 ? 'is' : 'are'} not configured`;
+    }
+    
+    return null;
+  };
+
+  const validationMessage = getValidationMessage();
+  const canSubmit = !isStreaming && !!prompt.trim() && providersWithKeys.length > 0 && !!summarizerSelection;
+
   return (
     <>
       <ApiConfiguration
@@ -57,13 +85,24 @@ export function QueryForm({ prompt, setPrompt, keys, handleKeyChange, models, ha
             validProviders={validProviders}
             modelLists={modelLists}
           />
-          <button 
-            type="submit" 
-            disabled={isStreaming || !prompt || validProviders.length === 0} 
-            className="bg-[hsl(280,100%,70%)] text-white font-bold py-2 px-6 rounded-lg hover:bg-[hsl(280,100%,60%)] disabled:bg-gray-600 disabled:cursor-not-allowed"
-          >
-            {isStreaming ? "Streaming..." : "Stream Response"}
-          </button>
+          <div className="flex flex-col items-end gap-2">
+            {validationMessage && (
+              <div className={`text-sm text-right ${
+                canSubmit && missingProviders.length > 0 
+                  ? 'text-blue-400' // Info message for missing providers when form is valid
+                  : 'text-amber-400' // Warning/error message when form is invalid
+              }`}>
+                {validationMessage}
+              </div>
+            )}
+            <button 
+              type="submit" 
+              disabled={!canSubmit} 
+              className="bg-[hsl(280,100%,70%)] text-white font-bold py-2 px-6 rounded-lg hover:bg-[hsl(280,100%,60%)] disabled:bg-gray-600 disabled:cursor-not-allowed"
+            >
+              {isStreaming ? "Streaming..." : providersWithKeys.length > 0 ? `Stream with ${providersWithKeys.length} provider${providersWithKeys.length > 1 ? 's' : ''}` : "Stream Response"}
+            </button>
+          </div>
         </div>
       </form>
     </>

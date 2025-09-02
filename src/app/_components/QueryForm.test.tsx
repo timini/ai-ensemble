@@ -48,6 +48,7 @@ describe('QueryForm', () => {
         summarizerSelection="openai:gpt-4"
         setSummarizerSelection={vi.fn()}
         handleSubmit={vi.fn()}
+        handleStreamingSubmit={vi.fn()}
         ensembleQueryIsPending={true}
         validProviders={['openai', 'google', 'anthropic']}
         modelLists={{ openai: ['gpt-4'], google: ['gemini-1.5-flash'], anthropic: ['claude-2'] }}
@@ -56,10 +57,11 @@ describe('QueryForm', () => {
         modelsLoading={new Set()}
         isKeyVisible={new Set()}
         toggleKeyVisibility={vi.fn()}
+        isStreaming={true}
       />
     );
 
-    const button = screen.getByRole('button', { name: /processing.../i });
+    const button = screen.getByRole('button', { name: /streaming.../i });
     expect(button).toBeDisabled();
   });
 });

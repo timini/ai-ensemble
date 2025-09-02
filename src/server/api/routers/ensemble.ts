@@ -5,7 +5,7 @@ import { OpenAIProvider } from "~/server/ai-providers/OpenAIProvider";
 import { GoogleProvider } from "~/server/ai-providers/GoogleProvider";
 import { AnthropicProvider } from "~/server/ai-providers/AnthropicProvider";
 
-const ProviderEnum = z.enum(["openai", "google", "anthropic"]);
+const ProviderEnum = z.enum(["openai", "google", "anthropic", "grok"]);
 
 // Helper function to calculate agreement scores
 export async function calculateAgreement(
@@ -77,8 +77,8 @@ export async function makeParallelAPICalls(
 }
 
 export async function callSummarizerAI(
-  summarizer: { provider: "openai" | "google" | "anthropic"; model: string },
-  keys: { openai: string; google: string; anthropic: string },
+  summarizer: { provider: "openai" | "google" | "anthropic" | "grok"; model: string },
+  keys: { openai: string; google: string; anthropic: string; grok?: string },
   openaiProvider: OpenAIProvider,
   googleProvider: GoogleProvider,
   anthropicProvider: AnthropicProvider,
@@ -101,6 +101,9 @@ export async function callSummarizerAI(
         if (!keys.anthropic) throw new Error("Anthropic key not provided for summarizer.");
         consensusResponse = await anthropicProvider.generateContent(summarizerPrompt, summarizer.model);
         break;
+      }
+      case "grok": {
+        throw new Error("Grok summarization not supported in non-streaming mode. Please use streaming mode.");
       }
     }
   } catch (error) {

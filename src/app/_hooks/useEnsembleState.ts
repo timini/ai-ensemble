@@ -6,9 +6,9 @@ import { FALLBACK_MODELS } from '~/utils/constants';
 export function useEnsembleState() {
   console.log("useEnsembleState: Render");
   const [prompt, setPrompt] = useState("");
-  const [keys, setKeys] = useState<Record<Provider, string>>({ openai: "", google: "", anthropic: "" });
-  const [models, setModels] = useState<Record<Provider, string>>({ openai: FALLBACK_MODELS.openai[0]!, google: FALLBACK_MODELS.google[0]!, anthropic: FALLBACK_MODELS.anthropic[0]! });
-  const [keyStatus, setKeyStatus] = useState<Record<Provider, KeyStatus>>({ openai: "unchecked", google: "unchecked", anthropic: "unchecked" });
+  const [keys, setKeys] = useState<Record<Provider, string>>({ openai: "", google: "", anthropic: "", grok: "" });
+  const [models, setModels] = useState<Record<Provider, string>>({ openai: FALLBACK_MODELS.openai[0]!, google: FALLBACK_MODELS.google[0]!, anthropic: FALLBACK_MODELS.anthropic[0]!, grok: FALLBACK_MODELS.grok[0]! });
+  const [keyStatus, setKeyStatus] = useState<Record<Provider, KeyStatus>>({ openai: "unchecked", google: "unchecked", anthropic: "unchecked", grok: "unchecked" });
   const [validationInProgress, setValidationInProgress] = useState<Set<Provider>>(new Set());
   const [modelsLoading, setModelsLoading] = useState<Set<Provider>>(new Set());
   const [isKeyVisible, setIsKeyVisible] = useState<Set<Provider>>(new Set());
@@ -23,10 +23,10 @@ export function useEnsembleState() {
     providerStates: Record<Provider, 'pending' | 'streaming' | 'complete' | 'error'>;
     consensusState: 'pending' | 'streaming' | 'complete';
   }>({
-    individualResponses: { openai: '', google: '', anthropic: '' },
+    individualResponses: { openai: '', google: '', anthropic: '', grok: '' },
     consensusResponse: '',
     agreementScores: null,
-    providerStates: { openai: 'pending', google: 'pending', anthropic: 'pending' },
+    providerStates: { openai: 'pending', google: 'pending', anthropic: 'pending', grok: 'pending' },
     consensusState: 'pending'
   });
 
@@ -144,6 +144,7 @@ export function useEnsembleState() {
     }
   }, [validProviders, modelLists, summarizerSelection]);
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   const handleStreamingSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!summarizerSelection || isStreaming) return;
@@ -153,10 +154,10 @@ export function useEnsembleState() {
 
     setIsStreaming(true);
     setStreamingData({
-      individualResponses: { openai: '', google: '', anthropic: '' },
+      individualResponses: { openai: '', google: '', anthropic: '', grok: '' },
       consensusResponse: '',
       agreementScores: null,
-      providerStates: { openai: 'pending', google: 'pending', anthropic: 'pending' },
+      providerStates: { openai: 'pending', google: 'pending', anthropic: 'pending', grok: 'pending' },
       consensusState: 'pending'
     });
 
@@ -193,7 +194,7 @@ export function useEnsembleState() {
                 case 'provider_start':
                   setStreamingData(prev => ({
                     ...prev,
-                    providerStates: { ...prev.providerStates, [data.provider]: 'streaming' }
+                    providerStates: { ...prev.providerStates, [data.provider as Provider]: 'streaming' }
                   }));
                   break;
                 
@@ -202,7 +203,7 @@ export function useEnsembleState() {
                     ...prev,
                     individualResponses: {
                       ...prev.individualResponses,
-                      [data.provider]: prev.individualResponses[data.provider] + data.content
+                      [data.provider as Provider]: prev.individualResponses[data.provider as Provider] + data.content
                     }
                   }));
                   break;
@@ -210,14 +211,14 @@ export function useEnsembleState() {
                 case 'provider_complete':
                   setStreamingData(prev => ({
                     ...prev,
-                    providerStates: { ...prev.providerStates, [data.provider]: 'complete' }
+                    providerStates: { ...prev.providerStates, [data.provider as Provider]: 'complete' }
                   }));
                   break;
 
                 case 'provider_error':
                   setStreamingData(prev => ({
                     ...prev,
-                    providerStates: { ...prev.providerStates, [data.provider]: 'error' }
+                    providerStates: { ...prev.providerStates, [data.provider as Provider]: 'error' }
                   }));
                   break;
 

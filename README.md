@@ -1,6 +1,6 @@
 # AI Ensemble
 
-**MVP Tagline:** One Prompt, A Chorus of AIs.
+**Tagline:** Compare. Consensus. Confidence.
 
 ## Overview
 
