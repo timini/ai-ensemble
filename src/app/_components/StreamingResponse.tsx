@@ -4,12 +4,13 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CopyButton } from './CopyButton';
 import { type Provider } from './ProviderSettings';
+import type { AgreementScores } from '~/types/agreement';
 
 interface StreamingResponseProps {
   streamingData: {
     individualResponses: Record<Provider, string>;
     consensusResponse: string;
-    agreementScores: { og: number; ga: number; ao: number } | null;
+    agreementScores: { og: number; ga: number; ao: number } | AgreementScores | null;
     providerStates: Record<Provider, 'pending' | 'streaming' | 'complete' | 'error'>;
     consensusState: 'pending' | 'streaming' | 'complete';
   };

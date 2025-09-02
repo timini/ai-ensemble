@@ -4,47 +4,66 @@ import cosineSimilarity from "cosine-similarity";
 import { OpenAIProvider } from "~/server/ai-providers/OpenAIProvider";
 import { GoogleProvider } from "~/server/ai-providers/GoogleProvider";
 import { AnthropicProvider } from "~/server/ai-providers/AnthropicProvider";
+import type { Provider } from "~/app/_components/ProviderSettings";
+import { createPairKey, getProviderPairs, type AgreementScores } from "~/types/agreement";
 
 const ProviderEnum = z.enum(["openai", "google", "anthropic", "grok"]);
 
-// Helper function to calculate agreement scores
+// Configuration for the embedding model
+const EMBEDDING_MODEL = "text-embedding-3-small";
+
+/**
+ * Calculates the cosine similarity between the responses of different AI models.
+ * It takes a record of responses keyed by a unique model configuration ID.
+ */
 export async function calculateAgreement(
-  openaiProvider: OpenAIProvider,
-  responses: { openai: string; google: string; anthropic: string }
-): Promise<{ og: number; ga: number; ao: number }> {
+  embeddingProvider: OpenAIProvider,
+  responses: Record<string, string>
+): Promise<AgreementScores> {
+  const modelIds = Object.keys(responses);
+
+  if (modelIds.length < 2) {
+    return [];
+  }
+
   try {
-    const texts = [responses.openai, responses.google, responses.anthropic];
-    console.log("calculateAgreement: Input texts lengths:", texts.map(t => t.length));
+    // Generate embeddings for all responses in parallel
+    const embeddings = await Promise.all(
+      modelIds.map(id => 
+        embeddingProvider.createEmbedding({
+          model: EMBEDDING_MODEL,
+          input: responses[id]!,
+        })
+      )
+    );
+
+    const agreementScores: AgreementScores = [];
+
+    // Calculate cosine similarity for each pair of embeddings
+    for (let i = 0; i < modelIds.length; i++) {
+      for (let j = i + 1; j < modelIds.length; j++) {
+        const id1 = modelIds[i]!;
+        const id2 = modelIds[j]!;
+        const embedding1 = embeddings[i];
+        const embedding2 = embeddings[j];
+
+        if (embedding1 && embedding2) {
+          const similarity = cosineSimilarity(embedding1, embedding2);
+          agreementScores.push({
+            id1,
+            id2,
+            score: similarity,
+          });
+        }
+      }
+    }
     
-    // Don't make an API call if any of the inputs are empty or just error messages
-    if (texts.some(t => !t || t.startsWith("Error:"))) {
-        console.log("calculateAgreement: Skipping due to empty or error texts");
-        return { og: 0, ga: 0, ao: 0 };
-    }
-
-    console.log("calculateAgreement: Calling createEmbedding...");
-    const embeddingResponse = await openaiProvider.createEmbedding(texts);
-    console.log("calculateAgreement: Received embeddings:", embeddingResponse.length, "vectors");
-
-    const [vecO, vecG, vecA] = embeddingResponse;
-
-    if (!vecO || !vecG || !vecA) {
-        console.log("calculateAgreement: Missing vectors:", { vecO: !!vecO, vecG: !!vecG, vecA: !!vecA });
-        return { og: 0, ga: 0, ao: 0 };
-    }
-
-    console.log("calculateAgreement: Vector dimensions:", vecO.length, vecG.length, vecA.length);
-
-    const og = cosineSimilarity(vecO, vecG);
-    const ga = cosineSimilarity(vecG, vecA);
-    const ao = cosineSimilarity(vecA, vecO);
-
-    console.log("calculateAgreement: Calculated scores:", { og, ga, ao });
-
-    return { og, ga, ao };
+    return agreementScores;
+    
   } catch (error) {
     console.error("Failed to calculate agreement scores:", error);
-    return { og: 0, ga: 0, ao: 0 };
+    // Return empty scores on failure
+    return [];
   }
 }
 

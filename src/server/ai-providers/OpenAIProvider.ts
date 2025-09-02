@@ -32,11 +32,11 @@ export class OpenAIProvider implements IAIProvider {
     }
   }
 
-  async createEmbedding(input: string[]): Promise<number[][]> {
+  async createEmbedding(params: { model: string; input: string; }): Promise<number[]> {
     const response = await this.openai.embeddings.create({
-      model: "text-embedding-3-small",
-      input,
+      model: params.model,
+      input: params.input,
     });
-    return response.data.map(d => d.embedding);
+    return response.data[0]!.embedding;
   }
 }

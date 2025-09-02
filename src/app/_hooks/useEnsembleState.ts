@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { api } from '~/trpc/react';
 import { type Provider, type KeyStatus } from '../_components/ProviderSettings';
 import { FALLBACK_MODELS } from '~/utils/constants';
+import type { AgreementScores } from '~/types/agreement';
 
 export function useEnsembleState() {
   console.log("useEnsembleState: Render");
@@ -19,7 +20,7 @@ export function useEnsembleState() {
   const [streamingData, setStreamingData] = useState<{
     individualResponses: Record<Provider, string>;
     consensusResponse: string;
-    agreementScores: { og: number; ga: number; ao: number } | null;
+    agreementScores: { og: number; ga: number; ao: number } | AgreementScores | null;
     providerStates: Record<Provider, 'pending' | 'streaming' | 'complete' | 'error'>;
     consensusState: 'pending' | 'streaming' | 'complete';
   }>({

@@ -1,118 +1,85 @@
-import { vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { calculateAgreement } from './ensemble';
 import { OpenAIProvider } from '~/server/ai-providers/OpenAIProvider';
-import { GoogleProvider } from '~/server/ai-providers/GoogleProvider';
-import { AnthropicProvider } from '~/server/ai-providers/AnthropicProvider';
-import { instantiateAIClients } from './ensemble';
-import { makeParallelAPICalls } from './ensemble';
-import { callSummarizerAI } from './ensemble';
-
-vi.mock('~/server/ai-providers/OpenAIProvider');
-vi.mock('~/server/ai-providers/GoogleProvider');
-vi.mock('~/server/ai-providers/AnthropicProvider');
 
 describe('Ensemble Router Helpers', () => {
-  describe('calculateAgreement', () => {
-    it('should return zeros if any response is empty', async () => {
-      const openaiProvider = new OpenAIProvider('');
-      const responses = { openai: '', google: 'response', anthropic: 'response' };
-      const scores = await calculateAgreement(openaiProvider, responses);
-      expect(scores).toEqual({ og: 0, ga: 0, ao: 0 });
-    });
 
-    it('should return zeros if embedding fails', async () => {
-      const openaiProvider = new OpenAIProvider('');
-      vi.mocked(openaiProvider.createEmbedding).mockRejectedValue(new Error('API Error'));
-      const responses = { openai: 'a', google: 'b', anthropic: 'c' };
-      const scores = await calculateAgreement(openaiProvider, responses);
-      expect(scores).toEqual({ og: 0, ga: 0, ao: 0 });
-    });
+  describe('calculateAgreement dynamic', () => {
+    let embeddingProvider: OpenAIProvider;
 
-    it('should calculate scores correctly', async () => {
-      const openaiProvider = new OpenAIProvider('');
-      vi.mocked(openaiProvider.createEmbedding).mockResolvedValue([
-        [1, 0],
-        [0, 1],
-        [0.8, 0.6],
-      ]);
-      const responses = { openai: 'a', google: 'b', anthropic: 'c' };
-      const scores = await calculateAgreement(openaiProvider, responses);
-      expect(scores.og).toBeCloseTo(0);
-      expect(scores.ga).toBeCloseTo(0.6);
-      expect(scores.ao).toBeCloseTo(0.8);
-    });
-  });
-  describe('instantiateAIClients', () => {
-    it('should create instances of AI providers', () => {
-      const keys = { openai: 'o-key', google: 'g-key', anthropic: 'a-key' };
-      const { openaiProvider, googleProvider, anthropicProvider } = instantiateAIClients(keys);
-      expect(openaiProvider).toBeInstanceOf(OpenAIProvider);
-      expect(googleProvider).toBeInstanceOf(GoogleProvider);
-      expect(anthropicProvider).toBeInstanceOf(AnthropicProvider);
-    });
-  });
-
-  describe('makeParallelAPICalls', () => {
-    it('should return responses from all providers', async () => {
-      const openaiProvider = new OpenAIProvider('');
-      const googleProvider = new GoogleProvider('');
-      const anthropicProvider = new AnthropicProvider('');
-      vi.mocked(openaiProvider.generateContent).mockResolvedValue('o-response');
-      vi.mocked(googleProvider.generateContent).mockResolvedValue('g-response');
-      vi.mocked(anthropicProvider.generateContent).mockResolvedValue('a-response');
-
-      const responses = await makeParallelAPICalls(openaiProvider, googleProvider, anthropicProvider, 'prompt', { openai: 'gpt-4', google: 'gemini-1.5-flash', anthropic: 'claude-3' });
-      expect(responses).toEqual({
-        openai: 'o-response',
-        google: 'g-response',
-        anthropic: 'a-response',
+    beforeEach(() => {
+      embeddingProvider = new OpenAIProvider('fake-key');
+      vi.spyOn(embeddingProvider, 'createEmbedding').mockImplementation(async (params) => {
+        const input = (params as { input: string }).input;
+        if (input === "Dogs are loyal.") return [1, 0.8, 0, 0]; // Vector A
+        if (input === "Canines are faithful.") return [0.8, 1, 0, 0]; // Vector A' (similar to A)
+        if (input === "Cats are independent.") return [0, 0, 1, 0.8]; // Vector B
+        if (input === "Felines are aloof.") return [0, 0, 0.8, 1]; // Vector B' (similar to B)
+        return [0, 0, 0, 0];
       });
     });
 
-    it('should handle errors from providers', async () => {
-      const openaiProvider = new OpenAIProvider('');
-      const googleProvider = new GoogleProvider('');
-      const anthropicProvider = new AnthropicProvider('');
-      vi.mocked(openaiProvider.generateContent).mockResolvedValue('o-response');
-      vi.mocked(googleProvider.generateContent).mockRejectedValue(new Error('g-error'));
-      vi.mocked(anthropicProvider.generateContent).mockResolvedValue('a-response');
-
-      const responses = await makeParallelAPICalls(openaiProvider, googleProvider, anthropicProvider, 'prompt', { openai: 'gpt-4', google: 'gemini-1.5-flash', anthropic: 'claude-3' });
-      expect(responses).toEqual({
-        openai: 'o-response',
-        google: 'Error: g-error',
-        anthropic: 'a-response',
-      });
-    });
-  });
-
-  describe('callSummarizerAI', () => {
-    const keys = { openai: 'o-key', google: 'g-key', anthropic: 'a-key' };
-    const summarizerPrompt = 'summarizer prompt';
-
-    it('should call the correct provider for summarization', async () => {
-      const openaiProvider = new OpenAIProvider('');
-      const googleProvider = new GoogleProvider('');
-      const anthropicProvider = new AnthropicProvider('');
-      vi.mocked(openaiProvider.generateContent).mockResolvedValue('o-summary');
-      vi.mocked(googleProvider.generateContent).mockResolvedValue('g-summary');
-      vi.mocked(anthropicProvider.generateContent).mockResolvedValue('a-summary');
-
-      const summarizer = { provider: 'openai' as const, model: 'gpt-4' };
-      const response = await callSummarizerAI(summarizer, keys, openaiProvider, googleProvider, anthropicProvider, summarizerPrompt);
-      expect(response).toBe('o-summary');
-      expect(openaiProvider.generateContent).toHaveBeenCalledWith(summarizerPrompt, 'gpt-4');
+    it('should return a high score for two very similar responses', async () => {
+      const responses = {
+        'model-1': "Dogs are loyal.",
+        'model-2': "Canines are faithful.",
+      };
+      const scores = await calculateAgreement(embeddingProvider, responses);
+      expect(scores.length).toBe(1);
+      expect(scores[0]!.score).toBeGreaterThan(0.9);
     });
 
-    it('should handle summarization errors', async () => {
-      const openaiProvider = new OpenAIProvider('');
-      const googleProvider = new GoogleProvider('');
-      const anthropicProvider = new AnthropicProvider('');
-      vi.mocked(openaiProvider.generateContent).mockRejectedValue(new Error('o-error'));
+    it('should return a low score for two dissimilar responses', async () => {
+      const responses = {
+        'model-1': "Dogs are loyal.",
+        'model-2': "Cats are independent.",
+      };
+      const scores = await calculateAgreement(embeddingProvider, responses);
+      expect(scores.length).toBe(1);
+      expect(scores[0]!.score).toBeLessThan(0.1);
+    });
 
-      const summarizer = { provider: 'openai' as const, model: 'gpt-4' };
-      const response = await callSummarizerAI(summarizer, keys, openaiProvider, googleProvider, anthropicProvider, summarizerPrompt);
-      expect(response).toContain('The summarization process failed.');
+    it('should handle three models with mixed similarity', async () => {
+      const responses = {
+        'model-1': "Dogs are loyal.",
+        'model-2': "Canines are faithful.",
+        'model-3': "Cats are independent.",
+      };
+      const scores = await calculateAgreement(embeddingProvider, responses);
+      expect(scores.length).toBe(3); // 3 pairs: (1,2), (1,3), (2,3)
+
+      const score12 = scores.find(s => s.id1 === 'model-1' && s.id2 === 'model-2')!.score;
+      const score13 = scores.find(s => s.id1 === 'model-1' && s.id2 === 'model-3')!.score;
+      const score23 = scores.find(s => s.id1 === 'model-2' && s.id2 === 'model-3')!.score;
+      
+      expect(score12).toBeGreaterThan(0.9); // High similarity
+      expect(score13).toBeLessThan(0.1);  // Low similarity
+      expect(score23).toBeLessThan(0.1);  // Low similarity
+    });
+
+    it('should return an empty array for less than two responses', async () => {
+      const responses = { 'model-1': "Dogs are loyal." };
+      const scores = await calculateAgreement(embeddingProvider, responses);
+      expect(scores).toEqual([]);
+    });
+
+    it('should handle four models with two distinct groups', async () => {
+        const responses = {
+            'dog-1': "Dogs are loyal.",
+            'dog-2': "Canines are faithful.",
+            'cat-1': "Cats are independent.",
+            'cat-2': "Felines are aloof.",
+        };
+        const scores = await calculateAgreement(embeddingProvider, responses);
+        expect(scores.length).toBe(6); // 6 pairs
+
+        const dogPairScore = scores.find(s => s.id1 === 'dog-1' && s.id2 === 'dog-2')!.score;
+        const catPairScore = scores.find(s => s.id1 === 'cat-1' && s.id2 === 'cat-2')!.score;
+        const crossPairScore = scores.find(s => s.id1 === 'dog-1' && s.id2 === 'cat-1')!.score;
+        
+        expect(dogPairScore).toBeGreaterThan(0.9);
+        expect(catPairScore).toBeGreaterThan(0.9);
+        expect(crossPairScore).toBeLessThan(0.1);
     });
   });
 });

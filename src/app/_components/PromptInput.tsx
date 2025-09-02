@@ -1,12 +1,19 @@
 "use client";
 
 interface PromptInputProps {
-  prompt: string;
-  setPrompt: (prompt: string) => void;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
 }
 
-export function PromptInput({ prompt, setPrompt }: PromptInputProps) {
+export function PromptInput({ value, onChange, placeholder }: PromptInputProps) {
   return (
-    <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="Enter your prompt here..." rows={5} className="bg-gray-800 p-3 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[hsl(280,100%,70%)] w-full" />
+    <textarea
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      rows={5}
+      className="bg-gray-800 p-3 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[hsl(280,100%,70%)] w-full"
+    />
   );
 }

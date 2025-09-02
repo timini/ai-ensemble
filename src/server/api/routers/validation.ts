@@ -112,21 +112,28 @@ async function validateAnthropic(key: string) {
 }
 
 async function validateGrok(key: string) {
-  const response = await fetch('https://api.x.ai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${key}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'grok-beta',
-      messages: [{ role: 'user', content: 'Test' }],
-      max_tokens: 1,
-    }),
-  });
+  try {
+    const response = await fetch('https://api.x.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${key}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'grok-beta',
+        messages: [{ role: 'user', content: 'Test' }],
+        max_tokens: 1,
+      }),
+    });
 
-  if (!response.ok) {
-    throw new Error(`Grok API error: ${response.status} ${response.statusText}`);
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => 'Unknown error');
+      throw new Error(`Grok API error: ${response.status} ${response.statusText}`);
+    }
+    
+  } catch (error) {
+    console.error("validateGrok: Exception:", error);
+    throw error;
   }
 }
 
@@ -138,13 +145,22 @@ export const validationRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       try {
         switch (input.provider) {
-          case "openai": await validateOpenAI(input.key); break;
-          case "google": await validateGoogle(input.key); break;
-          case "anthropic": await validateAnthropic(input.key); break;
-          case "grok": await validateGrok(input.key); break;
+          case "openai": 
+            await validateOpenAI(input.key); 
+            break;
+          case "google": 
+            await validateGoogle(input.key); 
+            break;
+          case "anthropic": 
+            await validateAnthropic(input.key); 
+            break;
+          case "grok": 
+            await validateGrok(input.key); 
+            break;
         }
         return { success: true, error: null };
       } catch (error) {
+        console.error(`${input.provider} validation failed:`, error);
         throw new TRPCError({
           code: 'BAD_REQUEST',
           message: error instanceof Error ? error.message : "Unknown error",
@@ -154,7 +170,7 @@ export const validationRouter = createTRPCRouter({
 
   getModels: publicProcedure
     .input(z.object({ provider: ProviderEnum, key: z.string().min(1) }))
-    .query(async ({ input }) => {
+    .mutation(async ({ input }) => {
         try {
             if (input.provider === 'openai') return await fetchOpenAIModels(input.key);
             // eslint-disable-next-line @typescript-eslint/no-unsafe-return

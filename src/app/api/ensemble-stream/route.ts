@@ -6,6 +6,8 @@ import { AnthropicProvider } from "~/server/ai-providers/AnthropicProvider";
 import { GrokProvider } from "~/server/ai-providers/GrokProvider";
 import type { IAIProvider } from "~/server/ai-providers/IAIProvider";
 import { calculateAgreement } from "~/server/api/routers/ensemble";
+import type { Provider } from "~/app/_components/ProviderSettings";
+import { toLegacyAgreementScores } from "~/types/agreement";
 
 const ProviderEnum = z.enum(["openai", "google", "anthropic", "grok"]);
 
@@ -185,9 +187,12 @@ export async function POST(req: NextRequest) {
           // Calculate agreement scores
           sendData('status', { message: 'Calculating agreement scores...' });
           // Use OpenAI provider for agreement calculation if available, otherwise skip
-          const agreementScores = providers.openai 
+          const dynamicAgreementScores = providers.openai 
             ? await calculateAgreement(providers.openai as OpenAIProvider, individualResponses)
-            : { og: 0, ga: 0, ao: 0 };
+            : {};
+          
+          // Convert dynamic scores to legacy format for v1 endpoint compatibility
+          const agreementScores = toLegacyAgreementScores(dynamicAgreementScores);
           sendData('agreement', { scores: agreementScores });
 
           // Generate consensus response
