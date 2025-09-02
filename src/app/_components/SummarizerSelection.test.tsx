@@ -11,7 +11,7 @@ describe('SummarizerSelection', () => {
         validProviders={['openai', 'google']}
         modelLists={{
           openai: ['gpt-4', 'gpt-3.5-turbo'],
-          google: ['gemini-pro', 'gemini-flash'],
+          google: ['gemini-1.5-flash', 'gemini-1.5-pro'],
           anthropic: [],
         }}
       />

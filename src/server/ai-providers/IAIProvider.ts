@@ -1,4 +1,4 @@
 export interface IAIProvider {
-  generateContent(prompt: string): Promise<string>;
+  generateContent(prompt: string, model?: string): Promise<string>;
   createEmbedding(input: string[]): Promise<number[][]>;
 }

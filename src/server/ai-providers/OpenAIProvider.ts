@@ -9,9 +9,9 @@ export class OpenAIProvider implements IAIProvider {
     this.openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
   }
 
-  async generateContent(prompt: string): Promise<string> {
+  async generateContent(prompt: string, model = "gpt-3.5-turbo"): Promise<string> {
     const response = await this.openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // TODO: Make this configurable
+      model,
       messages: [{ role: "user", content: prompt }],
     });
     return response.choices[0]?.message?.content ?? "";

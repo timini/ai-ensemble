@@ -9,8 +9,8 @@ export class GoogleProvider implements IAIProvider {
     this.genAI = new GoogleGenerativeAI(apiKey);
   }
 
-  async generateContent(prompt: string): Promise<string> {
-    const model = this.genAI.getGenerativeModel({ model: "gemini-pro" }); // TODO: Make this configurable
+  async generateContent(prompt: string, modelName = "gemini-1.5-flash"): Promise<string> {
+    const model = this.genAI.getGenerativeModel({ model: modelName });
     const result = await model.generateContent(prompt);
     return result.response.text() ?? "";
   }

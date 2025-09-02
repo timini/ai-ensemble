@@ -65,7 +65,7 @@ describe('useEnsembleState', () => {
                 if(options.onSuccess) {
                     options.onSuccess({
                         statuses: { openai: 'valid', google: 'valid', anthropic: 'valid' },
-                        modelLists: { openai: ['gpt-3.5-turbo'], google: ['gemini-pro'], anthropic: ['claude-2'] },
+                        modelLists: { openai: ['gpt-3.5-turbo'], google: ['gemini-1.5-flash'], anthropic: ['claude-2'] },
                     }, args, undefined);
                 }
                 if(options.onSettled) {

@@ -51,13 +51,13 @@ export async function makeParallelAPICalls(
   googleProvider: GoogleProvider,
   anthropicProvider: AnthropicProvider,
   prompt: string,
-  _models: { openai: string; google: string; anthropic: string }
+  models: { openai: string; google: string; anthropic: string }
 ) {
   const [openaiResult, googleResult, anthropicResult] =
     await Promise.allSettled([
-      openaiProvider.generateContent(prompt),
-      googleProvider.generateContent(prompt),
-      anthropicProvider.generateContent(prompt),
+      openaiProvider.generateContent(prompt, models.openai),
+      googleProvider.generateContent(prompt, models.google),
+      anthropicProvider.generateContent(prompt, models.anthropic),
     ]);
 
   return {
@@ -80,17 +80,17 @@ export async function callSummarizerAI(
     switch (summarizer.provider) {
       case "openai": {
         if (!keys.openai) throw new Error("OpenAI key not provided for summarizer.");
-        consensusResponse = await openaiProvider.generateContent(summarizerPrompt);
+        consensusResponse = await openaiProvider.generateContent(summarizerPrompt, summarizer.model);
         break;
       }
       case "google": {
         if (!keys.google) throw new Error("Google key not provided for summarizer.");
-        consensusResponse = await googleProvider.generateContent(summarizerPrompt);
+        consensusResponse = await googleProvider.generateContent(summarizerPrompt, summarizer.model);
         break;
       }
       case "anthropic": {
         if (!keys.anthropic) throw new Error("Anthropic key not provided for summarizer.");
-        consensusResponse = await anthropicProvider.generateContent(summarizerPrompt);
+        consensusResponse = await anthropicProvider.generateContent(summarizerPrompt, summarizer.model);
         break;
       }
     }

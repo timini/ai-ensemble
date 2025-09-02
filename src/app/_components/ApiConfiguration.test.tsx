@@ -8,7 +8,7 @@ describe('ApiConfiguration', () => {
       <ApiConfiguration
         keys={{ openai: '', google: '', anthropic: '' }}
         handleKeyChange={vi.fn()}
-        models={{ openai: 'gpt-4', google: 'gemini-pro', anthropic: 'claude-2' }}
+        models={{ openai: 'gpt-4', google: 'gemini-1.5-flash', anthropic: 'claude-2' }}
         handleModelChange={vi.fn()}
         keyStatus={{ openai: 'unchecked', google: 'unchecked', anthropic: 'unchecked' }}
         handleValidateKey={vi.fn()}
@@ -32,7 +32,7 @@ describe('ApiConfiguration', () => {
       <ApiConfiguration
         keys={{ openai: '', google: '', anthropic: '' }}
         handleKeyChange={vi.fn()}
-        models={{ openai: 'gpt-4', google: 'gemini-pro', anthropic: 'claude-2' }}
+        models={{ openai: 'gpt-4', google: 'gemini-1.5-flash', anthropic: 'claude-2' }}
         handleModelChange={vi.fn()}
         keyStatus={{ openai: 'unchecked', google: 'unchecked', anthropic: 'unchecked' }}
         handleValidateKey={vi.fn()}
@@ -53,7 +53,7 @@ describe('ApiConfiguration', () => {
       <ApiConfiguration
         keys={{ openai: '', google: '', anthropic: '' }}
         handleKeyChange={vi.fn()}
-        models={{ openai: 'gpt-4', google: 'gemini-pro', anthropic: 'claude-2' }}
+        models={{ openai: 'gpt-4', google: 'gemini-1.5-flash', anthropic: 'claude-2' }}
         handleModelChange={vi.fn()}
         keyStatus={{ openai: 'unchecked', google: 'unchecked', anthropic: 'unchecked' }}
         handleValidateKey={vi.fn()}

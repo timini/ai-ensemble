@@ -61,7 +61,7 @@ describe('Ensemble Router Helpers', () => {
       vi.mocked(googleProvider.generateContent).mockResolvedValue('g-response');
       vi.mocked(anthropicProvider.generateContent).mockResolvedValue('a-response');
 
-      const responses = await makeParallelAPICalls(openaiProvider, googleProvider, anthropicProvider, 'prompt', { openai: 'gpt-4', google: 'gemini-pro', anthropic: 'claude-3' });
+      const responses = await makeParallelAPICalls(openaiProvider, googleProvider, anthropicProvider, 'prompt', { openai: 'gpt-4', google: 'gemini-1.5-flash', anthropic: 'claude-3' });
       expect(responses).toEqual({
         openai: 'o-response',
         google: 'g-response',
@@ -77,7 +77,7 @@ describe('Ensemble Router Helpers', () => {
       vi.mocked(googleProvider.generateContent).mockRejectedValue(new Error('g-error'));
       vi.mocked(anthropicProvider.generateContent).mockResolvedValue('a-response');
 
-      const responses = await makeParallelAPICalls(openaiProvider, googleProvider, anthropicProvider, 'prompt', { openai: 'gpt-4', google: 'gemini-pro', anthropic: 'claude-3' });
+      const responses = await makeParallelAPICalls(openaiProvider, googleProvider, anthropicProvider, 'prompt', { openai: 'gpt-4', google: 'gemini-1.5-flash', anthropic: 'claude-3' });
       expect(responses).toEqual({
         openai: 'o-response',
         google: 'Error: g-error',
@@ -101,7 +101,7 @@ describe('Ensemble Router Helpers', () => {
       const summarizer = { provider: 'openai' as const, model: 'gpt-4' };
       const response = await callSummarizerAI(summarizer, keys, openaiProvider, googleProvider, anthropicProvider, summarizerPrompt);
       expect(response).toBe('o-summary');
-      expect(openaiProvider.generateContent).toHaveBeenCalledWith(summarizerPrompt);
+      expect(openaiProvider.generateContent).toHaveBeenCalledWith(summarizerPrompt, 'gpt-4');
     });
 
     it('should handle summarization errors', async () => {

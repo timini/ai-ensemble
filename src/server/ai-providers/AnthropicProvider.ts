@@ -9,9 +9,9 @@ export class AnthropicProvider implements IAIProvider {
     this.anthropic = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
   }
 
-  async generateContent(prompt: string): Promise<string> {
+  async generateContent(prompt: string, model = "claude-3-haiku-20240307"): Promise<string> {
     const response = await this.anthropic.messages.create({
-      model: "claude-3-haiku-20240307", // TODO: Make this configurable
+      model,
       max_tokens: 1024,
       messages: [{ role: "user", content: prompt }],
     });

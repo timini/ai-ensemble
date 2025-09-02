@@ -90,9 +90,58 @@ describe('Validation Router', () => {
       expect(models).toEqual(['gpt-4', 'gpt-3.5-turbo']);
     });
 
-    it('should return google models', async () => {
+    it('should filter out non-text models from openai', async () => {
+      mockOpenAIList.mockResolvedValue({
+        data: [
+          { id: 'gpt-4' },
+          { id: 'gpt-3.5-turbo' },
+          { id: 'dall-e-3' },
+          { id: 'whisper-1' },
+          { id: 'tts-1' },
+          { id: 'text-embedding-ada-002' },
+          { id: 'text-moderation-latest' },
+          { id: 'gpt-4o-realtime-preview' }
+        ],
+      });
+      const models = await caller.getModels({ provider: 'openai', key: 'test-key' });
+      // Should only include GPT models, excluding image, audio, embedding, moderation, and realtime models
+      expect(models).toEqual(['gpt-4', 'gpt-3.5-turbo']);
+    });
+
+    it('should return google models dynamically', async () => {
+      // Mock the Google AI listModels method
+      const mockListModels = vi.fn().mockResolvedValue([
+        { 
+          name: 'models/gemini-2.5-flash-exp', 
+          supportedGenerationMethods: ['generateContent'] 
+        },
+        { 
+          name: 'models/gemini-2.0-flash-exp', 
+          supportedGenerationMethods: ['generateContent'] 
+        },
+        { 
+          name: 'models/gemini-1.5-pro', 
+          supportedGenerationMethods: ['generateContent'] 
+        },
+        { 
+          name: 'models/text-embedding-004', 
+          supportedGenerationMethods: ['embedContent'] 
+        }
+      ]);
+      
+      // Mock the GoogleGenerativeAI constructor and listModels
+      const mockGoogleAI = {
+        listModels: mockListModels
+      };
+      (GoogleGenerativeAI as any).mockImplementation(() => mockGoogleAI);
+      
       const models = await caller.getModels({ provider: 'google', key: 'test-key' });
-      expect(models).toEqual(["gemini-1.5-pro-latest", "gemini-1.5-flash-latest"]);
+      // Should only include gemini models with generateContent support, excluding embedding models
+      expect(models).toEqual([
+        'gemini-2.5-flash-exp',
+        'gemini-2.0-flash-exp', 
+        'gemini-1.5-pro'
+      ]);
     });
 
     it('should return anthropic models', async () => {
