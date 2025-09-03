@@ -106,7 +106,7 @@ export function ImprovedEnsembleInterface() {
     } catch (error) {
       console.error("Failed to save selected models to localStorage:", error);
     }
-  }, [JSON.stringify(selectedModels)]); // Only depend on selectedModels changes
+  }, [selectedModels]); // Only depend on selectedModels changes
 
   // Save prompt to localStorage whenever it changes
   useEffect(() => {
@@ -122,7 +122,7 @@ export function ImprovedEnsembleInterface() {
     if (selectedSummarizer && selectedModels.length > 0 && selectedModels.some(m => m.id === selectedSummarizer)) {
       localStorage.setItem(SUMMARIZER_STORAGE_KEY, selectedSummarizer);
     }
-  }, [selectedSummarizer, JSON.stringify(selectedModels)]);
+  }, [selectedSummarizer, selectedModels]);
 
   const handleProviderKeysChange = useCallback((keys: Record<Provider, string>) => {
     setProviderKeys(keys);
@@ -376,8 +376,8 @@ export function ImprovedEnsembleInterface() {
     let result = 'Agreement Analysis Results:\n\n';
     streamingData.agreementScores.forEach(({ id1, id2, score }, index) => {
       const letter = String.fromCharCode(65 + index);
-      const model1 = modelNameMap.get(id1)?.split(' ').pop() || id1;
-      const model2 = modelNameMap.get(id2)?.split(' ').pop() || id2;
+      const model1 = modelNameMap.get(id1)?.split(' ').pop() ?? id1;
+      const model2 = modelNameMap.get(id2)?.split(' ').pop() ?? id2;
       result += `${letter}: ${model1} <> ${model2}: ${(score * 100).toFixed(0)}%\n`;
     });
     
@@ -535,7 +535,7 @@ export function ImprovedEnsembleInterface() {
                       </div>
                       <div className="prose prose-sm prose-invert max-w-none">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {streamingData.modelResponses[model.id] || 
+                          {streamingData.modelResponses[model.id] ?? 
                            (streamingData.modelStates[model.id] === 'streaming' ? ' ' : 'Waiting to start...')}
                         </ReactMarkdown>
                         {streamingData.modelStates[model.id] === 'streaming' && !streamingData.modelResponses[model.id] && (

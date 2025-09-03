@@ -41,16 +41,13 @@ describe('OpenAIProvider', () => {
   });
 
   describe('createEmbedding', () => {
-    it('should return embeddings for the input', async () => {
+    it('should return embedding for single input', async () => {
       mockCreateEmbedding.mockResolvedValue({
-        data: [{ embedding: [1, 2, 3] }, { embedding: [4, 5, 6] }],
+        data: [{ embedding: [1, 2, 3] }],
       });
       const provider = new OpenAIProvider('test-key');
-      const embeddings = await provider.createEmbedding(['input1', 'input2']);
-      expect(embeddings).toEqual([
-        [1, 2, 3],
-        [4, 5, 6],
-      ]);
+      const embedding = await provider.createEmbedding({ model: 'text-embedding-3-small', input: 'test input' });
+      expect(embedding).toEqual([1, 2, 3]);
     });
   });
 });

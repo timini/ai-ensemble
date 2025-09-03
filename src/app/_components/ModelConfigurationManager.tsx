@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { ModelConfiguration, ModelConfigurationTemplate } from '~/types/modelConfig';
-import { MODEL_TEMPLATES, getTemplatesByProvider, getProviderColor } from '~/types/modelConfig';
+import { getTemplatesByProvider, getProviderColor } from '~/types/modelConfig';
 import type { Provider } from './ProviderSettings';
 
 interface ModelConfigurationManagerProps {

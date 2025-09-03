@@ -6,25 +6,27 @@ describe('PromptInput', () => {
   it('should render the prompt input', () => {
     render(
       <PromptInput
-        prompt=""
-        setPrompt={vi.fn()}
+        value=""
+        onChange={vi.fn()}
+        placeholder="Enter your prompt here..."
       />
     );
 
     expect(screen.getByPlaceholderText('Enter your prompt here...')).toBeInTheDocument();
   });
 
-  it('should call setPrompt on change', () => {
-    const setPrompt = vi.fn();
+  it('should call onChange on change', () => {
+    const onChange = vi.fn();
     render(
       <PromptInput
-        prompt=""
-        setPrompt={setPrompt}
+        value=""
+        onChange={onChange}
+        placeholder="Enter your prompt here..."
       />
     );
 
     const textarea = screen.getByPlaceholderText('Enter your prompt here...');
     fireEvent.change(textarea, { target: { value: 'new prompt' } });
-    expect(setPrompt).toHaveBeenCalledWith('new prompt');
+    expect(onChange).toHaveBeenCalledWith('new prompt');
   });
 });
