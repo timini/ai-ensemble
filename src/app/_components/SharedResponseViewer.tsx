@@ -75,7 +75,7 @@ export function SharedResponseViewer({ data }: SharedResponseViewerProps) {
           <div className="bg-gray-800 p-6 rounded-lg">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-[hsl(280,100%,80%)]">Consensus Response</h3>
-              <CopyButton text={data.consensusResponse} />
+              <CopyButton textToCopy={data.consensusResponse} />
             </div>
             <div className="prose prose-invert max-w-none">
               <div className="whitespace-pre-wrap text-gray-200 leading-relaxed">
@@ -105,7 +105,7 @@ export function SharedResponseViewer({ data }: SharedResponseViewerProps) {
                     <span className="text-sm text-gray-400">
                       Model: {data.models[provider as keyof typeof data.models]}
                     </span>
-                    <CopyButton text={response} />
+                    <CopyButton textToCopy={response} />
                   </div>
                 </div>
                 <div className="whitespace-pre-wrap text-gray-200 leading-relaxed">
