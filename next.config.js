@@ -6,7 +6,7 @@ import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
 const config = {
-    output: 'export',
+    // Removed output: 'export' to support dynamic API routes (tRPC, streaming, etc.)
 };
 
 export default config;

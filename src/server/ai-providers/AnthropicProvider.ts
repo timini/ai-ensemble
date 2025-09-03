@@ -33,9 +33,9 @@ export class AnthropicProvider implements IAIProvider {
     }
   }
 
-  async createEmbedding(input: string[]): Promise<number[][]> {
+  async createEmbedding(_params: { model: string; input: string; }): Promise<number[]> {
     // Anthropic does not have a direct embedding API
     console.warn("AnthropicProvider does not support createEmbedding.");
-    return input.map(() => []); // Return empty embeddings for each input
+    return []; // Return empty embedding
   }
 }

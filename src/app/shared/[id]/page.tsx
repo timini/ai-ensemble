@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { StorageService } from '~/server/services/storage';
+import { getSharedResponse } from '~/server/services/storage';
 import { SharedResponseViewer } from '~/app/_components/SharedResponseViewer';
 
 interface SharedPageProps {
@@ -9,11 +9,10 @@ interface SharedPageProps {
 }
 
 export default async function SharedPage({ params }: SharedPageProps) {
-  const storageService = new StorageService();
   const resolvedParams = await params;
   
   try {
-    const sharedResponse = await storageService.getSharedResponse(resolvedParams.id);
+    const sharedResponse = await getSharedResponse(resolvedParams.id);
     
     if (!sharedResponse) {
       notFound();
@@ -33,11 +32,10 @@ export default async function SharedPage({ params }: SharedPageProps) {
 }
 
 export async function generateMetadata({ params }: SharedPageProps) {
-  const storageService = new StorageService();
   const resolvedParams = await params;
   
   try {
-    const sharedResponse = await storageService.getSharedResponse(resolvedParams.id);
+    const sharedResponse = await getSharedResponse(resolvedParams.id);
     
     if (!sharedResponse) {
       return {

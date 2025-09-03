@@ -1,40 +1,26 @@
 import { initializeApp } from "firebase/app";
 import { getStorage, ref, uploadString, getDownloadURL } from "firebase/storage";
-import { z } from "zod";
+
 import { env } from "~/env";
-import { type SharedResponse } from "~/types/share";
+import { type SharedResponse, SharedResponseSchema } from "~/types/share";
 
 const firebaseConfig = {
-  apiKey: env.FIREBASE_API_KEY,
-  authDomain: env.FIREBASE_AUTH_DOMAIN,
-  projectId: env.FIREBASE_PROJECT_ID,
-  storageBucket: env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: env.FIREBASE_APP_ID,
+  apiKey: env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 
-const SharedResponseSchema = z.object({
-  id: z.string(),
-  prompt: z.string(),
-  models: z.record(z.string()),
-  responses: z.record(z.string()),
-  consensusResponse: z.string(),
-  scores: z.array(z.object({
-    modelA: z.string(),
-    modelB: z.string(),
-    score: z.number(),
-  })),
-  timestamp: z.string(),
-});
-
 export async function saveSharedResponse(data: SharedResponse): Promise<string> {
   const validatedData = SharedResponseSchema.parse(data);
-  const storageRef = ref(storage, `shared-responses/${validatedData.id}.json`);
+  const storageRef = ref(storage, `shared-responses/${validatedData.id!}.json`);
   await uploadString(storageRef, JSON.stringify(validatedData, null, 2));
-  return validatedData.id;
+  return validatedData.id!;
 }
 
 export async function getSharedResponse(id: string): Promise<SharedResponse | null> {

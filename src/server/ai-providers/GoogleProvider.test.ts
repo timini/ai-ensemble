@@ -41,10 +41,10 @@ describe('GoogleProvider', () => {
   });
 
   describe('createEmbedding', () => {
-    it('should return empty arrays for each input', async () => {
+    it('should return empty array for createEmbedding', async () => {
       const provider = new GoogleProvider('test-key');
-      const embeddings = await provider.createEmbedding(['input1', 'input2']);
-      expect(embeddings).toEqual([[], []]);
+      const embeddings = await provider.createEmbedding({ model: 'test-model', input: 'test-input' });
+      expect(embeddings).toEqual([]);
     });
   });
 });

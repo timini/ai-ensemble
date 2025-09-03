@@ -31,7 +31,7 @@ export function useEnsembleState() {
     consensusState: 'pending'
   });
 
-  const utils = api.useUtils();
+
 
   const validateAllKeysMutation = api.validation.validateAllKeys.useMutation({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,7 +46,19 @@ export function useEnsembleState() {
       }, [setInitialLoad])
   });
 
-  const getModelsMutation = api.validation.getModels.useMutation();
+  const getModelsMutation = api.validation.getModels.useMutation({
+    onSuccess: (data, variables) => {
+      if (data && data.length > 0) {
+        setModelLists(prev => ({ ...prev, [variables.provider]: data }));
+        setModels(prev => ({ ...prev, [variables.provider]: data[0]! }));
+      }
+      setModelsLoading(prev => { const s = new Set(prev); s.delete(variables.provider); return s; });
+    },
+    onError: (error, variables) => {
+      console.error('Failed to fetch models for', variables.provider, ':', error);
+      setModelsLoading(prev => { const s = new Set(prev); s.delete(variables.provider); return s; });
+    }
+  });
 
   const validateApiKeyMutation = api.validation.validateApiKey.useMutation({
     onSuccess: (data, variables) => {
@@ -54,21 +66,10 @@ export function useEnsembleState() {
       setKeyStatus(prev => ({ ...prev, [variables.provider]: newStatus }));
       if (newStatus === 'valid') {
         setModelsLoading(prev => new Set(prev).add(variables.provider));
-        void getModelsMutation.mutate(
-          {
-            provider: variables.provider,
-            key: variables.key
-          }
-        )
-          .then(data => {
-            if (data && data.length > 0) {
-              setModelLists(prev => ({ ...prev, [variables.provider]: data }));
-              setModels(prev => ({ ...prev, [variables.provider]: data[0]! }));
-            }
-          })
-          .finally(() => {
-            setModelsLoading(prev => { const s = new Set(prev); s.delete(variables.provider); return s; });
-          });
+        getModelsMutation.mutate({
+          provider: variables.provider,
+          key: variables.key
+        });
       }
     },
     onError: (error, variables) => setKeyStatus(prev => ({ ...prev, [variables.provider]: "invalid" })),

@@ -27,11 +27,11 @@ export class GoogleProvider implements IAIProvider {
     }
   }
 
-  async createEmbedding(input: string[]): Promise<number[][]> {
-    // Google Generative AI does not have a direct embedding API for multiple inputs like OpenAI
-    // For simplicity in this example, we'll return empty arrays or throw an error.
+  async createEmbedding(_params: { model: string; input: string; }): Promise<number[]> {
+    // Google Generative AI does not have a direct embedding API like OpenAI
+    // For simplicity in this example, we'll return an empty array.
     // In a real application, you'd implement this based on Google's capabilities.
-    console.warn("GoogleProvider does not support createEmbedding for multiple inputs directly.");
-    return input.map(() => []); // Return empty embeddings for each input
+    console.warn("GoogleProvider does not support createEmbedding directly.");
+    return []; // Return empty embedding
   }
 }
