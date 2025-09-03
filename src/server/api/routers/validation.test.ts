@@ -213,7 +213,7 @@ describe('Validation Router', () => {
           "gemini-2.5-pro"
         ]));
         expect(result.modelLists.anthropic).toEqual(["claude-3-opus-20240229", "claude-3-sonnet-20240229", "claude-3-haiku-20240307"]);
-        expect(result.modelLists.grok).toEqual(["grok-beta", "grok-2-latest", "grok-2-public-beta"]);
+        expect(result.modelLists.grok).toEqual(["grok-beta", "grok-2-latest", "grok-2-public-beta", "grok-2", "grok-1"]);
     });
   });
 });

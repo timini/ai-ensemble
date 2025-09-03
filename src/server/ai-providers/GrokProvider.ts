@@ -11,7 +11,7 @@ export class GrokProvider implements IAIProvider {
     });
   }
 
-  async generateContent(prompt: string, model = 'llama3-8b-8192'): Promise<string> {
+  async generateContent(prompt: string, model = 'grok-2-latest'): Promise<string> {
     const chatCompletion = await this.client.chat.completions.create({
       messages: [{ role: 'user', content: prompt }],
       model: model,
@@ -19,8 +19,8 @@ export class GrokProvider implements IAIProvider {
     return chatCompletion.choices[0]!.message.content ?? "";
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async *generateContentStream(prompt: string, model = 'llama3-8b-8192'): AsyncGenerator<string, void, unknown> {
+
+  async *generateContentStream(prompt: string, model = 'grok-2-latest'): AsyncGenerator<string, void, unknown> {
     const stream = await this.client.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
       model: model,

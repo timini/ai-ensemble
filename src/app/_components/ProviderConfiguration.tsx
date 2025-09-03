@@ -102,12 +102,12 @@ export function ProviderConfiguration({
 
   // Cleanup timeouts on unmount
   useEffect(() => {
+    const timeouts = validationTimeouts.current;
     return () => {
-      Object.values(validationTimeouts.current).forEach(timeout => {
+      Object.values(timeouts).forEach(timeout => {
         if (timeout) clearTimeout(timeout);
       });
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleKeyVisibility = (provider: Provider) => {
@@ -124,8 +124,8 @@ export function ProviderConfiguration({
 
   const validateProviderKey = useCallback(async (provider: Provider, key: string) => {
     if (!key.trim()) {
-      onProviderStatusChange({ [provider]: 'unchecked' });
-      onAvailableModelsChange({ [provider]: [] });
+      onProviderStatusChange({ [provider]: 'unchecked' } as Partial<Record<Provider, 'valid' | 'invalid' | 'unchecked'>>);
+      onAvailableModelsChange({ [provider]: [] } as Partial<Record<Provider, string[]>>);
       return;
     }
 
@@ -140,22 +140,22 @@ export function ProviderConfiguration({
 
       if (validationResult.success) {
         // Update status to valid
-        onProviderStatusChange({ [provider]: 'valid' });
+        onProviderStatusChange({ [provider]: 'valid' } as Partial<Record<Provider, 'valid' | 'invalid' | 'unchecked'>>);
 
         // Fetch available models
         try {
           const modelsResult = await getModelsMutation.mutateAsync({
             provider,
             key,
-          });
+          }) as string[];
           
-          onAvailableModelsChange({ [provider]: modelsResult });
+          onAvailableModelsChange({ [provider]: modelsResult } as Partial<Record<Provider, string[]>>);
         } catch (modelsError) {
           console.error(`Error fetching models for ${provider}:`, modelsError);
-          onAvailableModelsChange({ [provider]: [] });
+          onAvailableModelsChange({ [provider]: [] } as Partial<Record<Provider, string[]>>);
         }
       } else {
-        onProviderStatusChange({ [provider]: 'invalid' });
+        onProviderStatusChange({ [provider]: 'invalid' } as Partial<Record<Provider, 'valid' | 'invalid' | 'unchecked'>>);
         onAvailableModelsChange({ [provider]: [] });
       }
     } catch (error) {
@@ -170,7 +170,7 @@ export function ProviderConfiguration({
         return newSet;
       });
     }
-  }, [validateApiKeyMutation, getModelsMutation, providerStatus, onProviderStatusChange, availableModels, onAvailableModelsChange]);
+  }, [validateApiKeyMutation, getModelsMutation, onProviderStatusChange, onAvailableModelsChange]);
 
   // Debounced validation refs
   const validationTimeouts = useRef<Record<Provider, NodeJS.Timeout | null>>({
@@ -288,7 +288,8 @@ export function ProviderConfiguration({
                         placeholder={info.keyPlaceholder}
                         value={providerKeys[provider]}
                         onChange={(e) => updateProviderKey(provider, e.target.value)}
-                        onPaste={(e) => {
+                        onPaste={(_e) => {
+                          // Handle paste event if needed
                         }}
                         className="flex-1 bg-gray-800 border border-gray-600 rounded px-3 py-2 text-sm text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none"
                       />

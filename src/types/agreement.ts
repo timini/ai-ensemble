@@ -1,4 +1,4 @@
-import type { Provider } from "~/app/_components/ProviderSettings";
+
 
 export type AgreementScore = {
   id1: string;

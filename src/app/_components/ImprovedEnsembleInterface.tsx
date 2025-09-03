@@ -144,6 +144,13 @@ export function ImprovedEnsembleInterface() {
       return;
     }
 
+    // Check if all required API keys are available
+    const missingKeys = selectedModels.filter(m => !providerKeys[m.provider] || providerKeys[m.provider].trim() === '');
+    if (missingKeys.length > 0) {
+      alert(`Missing API keys for: ${missingKeys.map(m => m.provider).join(', ')}`);
+      return;
+    }
+
     setIsStreaming(true);
     
     // Initialize streaming data
@@ -194,6 +201,10 @@ export function ImprovedEnsembleInterface() {
         },
       };
 
+      console.log("Sending payload:", JSON.stringify(payload, null, 2));
+      console.log("Provider keys:", providerKeys);
+      console.log("Selected models:", selectedModels);
+
       const response = await fetch('/api/ensemble-stream-v2', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -201,7 +212,19 @@ export function ImprovedEnsembleInterface() {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        try {
+          const errorData = await response.json() as { error?: string; details?: string };
+          if (errorData.error) {
+            errorMessage += ` - ${errorData.error}`;
+            if (errorData.details) {
+              console.error('Error details:', errorData.details);
+            }
+          }
+        } catch {
+          // If we can't parse JSON, use the basic error message
+        }
+        throw new Error(errorMessage);
       }
 
       const reader = response.body?.getReader();

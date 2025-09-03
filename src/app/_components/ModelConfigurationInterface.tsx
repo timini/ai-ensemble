@@ -8,13 +8,14 @@ import { Header } from './Header';
 // import type { ModelConfiguration } from '~/types/modelConfig';
 import { getProviderColor } from '~/types/modelConfig';
 import { ConsensusDiagram } from './ConsensusDiagram';
+import type { AgreementScore } from '~/types/agreement';
 
 interface StreamingData {
   configResponses: Record<string, string>;
   consensusResponse: string;
-  agreementScores: Record<string, number>;
+  agreementScores: AgreementScore[];
   configStates: Record<string, 'pending' | 'streaming' | 'complete' | 'error'>;
-  consensusState: 'pending' | 'streaming' | 'complete';
+  consensusState: 'pending' | 'streaming' | 'complete' | 'error';
 }
 
 export function ModelConfigurationInterface() {
@@ -36,7 +37,7 @@ export function ModelConfigurationInterface() {
   const [streamingData, setStreamingData] = useState<StreamingData>({
     configResponses: {},
     consensusResponse: '',
-    agreementScores: {},
+    agreementScores: [],
     configStates: {},
     consensusState: 'pending'
   });
@@ -46,16 +47,8 @@ export function ModelConfigurationInterface() {
     setSelectedSummarizer(enabledConfigurations[0]!.id);
   }
 
-  const handleStreamingSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!prompt.trim() || !selectedSummarizer || !isReadyForStreaming) {
-      return;
-    }
-
-    setIsStreaming(true);
-    
-    // Initialize streaming data
+  // Helper function to initialize streaming state
+  const initializeStreamingState = () => {
     const initialStates: Record<string, 'pending' | 'streaming' | 'complete' | 'error'> = {};
     const initialResponses: Record<string, string> = {};
     
@@ -67,125 +60,160 @@ export function ModelConfigurationInterface() {
     setStreamingData({
       configResponses: initialResponses,
       consensusResponse: '',
-      agreementScores: {},
+      agreementScores: [],
       configStates: initialStates,
       consensusState: 'pending'
     });
+  };
 
-    try {
-      const payload = getStreamingPayload(prompt, { configId: selectedSummarizer });
+  // Helper function to setup streaming request
+  const setupStreamingRequest = async (prompt: string, selectedSummarizer: string) => {
+    const payload = getStreamingPayload(prompt, { configId: selectedSummarizer });
 
-      const response = await fetch('/api/ensemble-stream-v2', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+    const response = await fetch('/api/ensemble-stream-v2', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-      const reader = response.body?.getReader();
-      if (!reader) {
-        throw new Error('No response body reader available');
-      }
+    const reader = response.body?.getReader();
+    if (!reader) {
+      throw new Error('No response body reader available');
+    }
 
-      const decoder = new TextDecoder();
+    return { reader, decoder: new TextDecoder() };
+  };
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+  // Helper function to handle streaming events
+  const handleStreamingEvent = (data: {
+    type: string;
+    configId?: string;
+    content?: string;
+    error?: string;
+    response?: string;
+    scores?: Record<string, number>;
+    consensusResponse?: string;
+    [key: string]: unknown;
+  }) => {
+    switch (data.type) {
+      case 'config_start':
+        if (data.configId) {
+          setStreamingData(prev => ({
+            ...prev,
+            configStates: { ...prev.configStates, [data.configId!]: 'streaming' }
+          }));
+        }
+        break;
 
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const data = JSON.parse(line.slice(6)) as {
-                type: string;
-                configId?: string;
-                content?: string;
-                error?: string;
-                response?: string;
-                scores?: Record<string, number>;
-                consensusResponse?: string;
-                [key: string]: unknown;
-              };
-
-              switch (data.type) {
-                case 'config_start':
-                  if (data.configId) {
-                    setStreamingData(prev => ({
-                      ...prev,
-                      configStates: { ...prev.configStates, [data.configId!]: 'streaming' }
-                    }));
-                  }
-                  break;
-
-                case 'chunk':
-                  if (data.configId && data.content) {
-                    setStreamingData(prev => ({
-                      ...prev,
-                      configResponses: {
-                        ...prev.configResponses,
-                        [data.configId!]: prev.configResponses[data.configId!] + data.content!
-                      }
-                    }));
-                  }
-                  break;
-
-                case 'config_complete':
-                  if (data.configId) {
-                    setStreamingData(prev => ({
-                      ...prev,
-                      configStates: { ...prev.configStates, [data.configId!]: 'complete' }
-                    }));
-                  }
-                  break;
-
-                case 'config_error':
-                  if (data.configId) {
-                    setStreamingData(prev => ({
-                      ...prev,
-                      configStates: { ...prev.configStates, [data.configId!]: 'error' }
-                    }));
-                  }
-                  break;
-
-                case 'consensus_start':
-                  setStreamingData(prev => ({ ...prev, consensusState: 'streaming' }));
-                  break;
-
-                case 'consensus_chunk':
-                  if (data.content) {
-                    setStreamingData(prev => ({
-                      ...prev,
-                      consensusResponse: prev.consensusResponse + data.content!
-                    }));
-                  }
-                  break;
-
-                case 'agreement':
-                  if (data.scores) {
-                    setStreamingData(prev => ({ ...prev, agreementScores: data.scores! }));
-                  }
-                  break;
-
-                case 'complete':
-                  setStreamingData(prev => ({ ...prev, consensusState: 'complete' }));
-                  break;
-
-                case 'error':
-                  console.error('Streaming error:', data.error);
-                  break;
-              }
-            } catch (error) {
-              console.error('Error parsing SSE data:', error);
+      case 'chunk':
+        if (data.configId && data.content) {
+          setStreamingData(prev => ({
+            ...prev,
+            configResponses: {
+              ...prev.configResponses,
+              [data.configId!]: prev.configResponses[data.configId!] + data.content!
             }
+          }));
+        }
+        break;
+
+      case 'config_complete':
+        if (data.configId) {
+          setStreamingData(prev => ({
+            ...prev,
+            configStates: { ...prev.configStates, [data.configId!]: 'complete' }
+          }));
+        }
+        break;
+
+      case 'config_error':
+        if (data.configId) {
+          setStreamingData(prev => ({
+            ...prev,
+            configStates: { ...prev.configStates, [data.configId!]: 'error' }
+          }));
+        }
+        break;
+
+      case 'consensus_start':
+        setStreamingData(prev => ({ ...prev, consensusState: 'streaming' }));
+        break;
+
+      case 'consensus_chunk':
+        if (data.content) {
+          setStreamingData(prev => ({
+            ...prev,
+            consensusResponse: prev.consensusResponse + data.content!
+          }));
+        }
+        break;
+
+      case 'agreement':
+        if (data.scores) {
+          setStreamingData(prev => ({ ...prev, agreementScores: data.scores as AgreementScore[] }));
+        }
+        break;
+
+      case 'complete':
+        setStreamingData(prev => ({ ...prev, consensusState: 'complete' }));
+        break;
+
+      case 'error':
+        console.error('Streaming error:', data.error);
+        break;
+    }
+  };
+
+  // Helper function to process streaming response
+  const processStreamingResponse = async (reader: ReadableStreamDefaultReader<Uint8Array>, decoder: TextDecoder) => {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value);
+      const lines = chunk.split('\n');
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          try {
+            const data = JSON.parse(line.slice(6)) as {
+              type: string;
+              configId?: string;
+              content?: string;
+              error?: string;
+              response?: string;
+              scores?: Record<string, number>;
+              consensusResponse?: string;
+              [key: string]: unknown;
+            };
+
+            handleStreamingEvent(data);
+          } catch (error) {
+            console.error('Error parsing SSE data:', error);
           }
         }
       }
+    }
+  };
+
+  const handleStreamingSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!prompt.trim() || !selectedSummarizer || !isReadyForStreaming) {
+      return;
+    }
+
+    setIsStreaming(true);
+    initializeStreamingState();
+
+    try {
+      const { reader, decoder } = await setupStreamingRequest(prompt, selectedSummarizer);
+
+      await processStreamingResponse(reader, decoder);
     } catch (error) {
       console.error('Streaming error:', error);
     } finally {
@@ -378,8 +406,8 @@ export function ModelConfigurationInterface() {
                 
                 <div className="md:col-span-1">
                   <h2 className="text-2xl font-bold mb-4 border-b-2 border-gray-600 pb-2">Agreement Analysis</h2>
-                  {Object.keys(streamingData.agreementScores).length > 0 ? (
-                    <ConsensusDiagram scores={streamingData.agreementScores} />
+                  {streamingData.agreementScores.length > 0 ? (
+                    <ConsensusDiagram scores={streamingData.agreementScores} models={enabledConfigurations} />
                   ) : (
                     <div className="bg-gray-800 p-4 rounded-lg text-center text-gray-400">
                       {enabledConfigurations.length >= 2 ? 'Calculating agreement scores...' : 'Need at least 2 models for agreement analysis'}

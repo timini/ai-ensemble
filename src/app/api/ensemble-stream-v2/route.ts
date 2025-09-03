@@ -50,7 +50,7 @@ function createProviderInstance(provider: Provider, apiKey: string): IAIProvider
     case 'grok':
       return new GrokProvider(apiKey);
     default:
-      throw new Error(`Unknown provider: ${provider}`);
+      throw new Error(`Unknown provider: ${String(provider)}`);
   }
 }
 
@@ -58,7 +58,10 @@ export async function POST(req: NextRequest) {
   try {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const body = await req.json();
+    console.log("Received streaming request:", JSON.stringify(body, null, 2));
+    
     const input = StreamRequestSchemaV2.parse(body);
+    console.log("Request parsed successfully");
 
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
@@ -72,11 +75,17 @@ export async function POST(req: NextRequest) {
           // Create provider instances with their respective API keys
           for (const config of input.configurations) {
             try {
-              providerInstances[config.id] = createProviderInstance(config.provider, input.keys[config.id]!);
+              const apiKey = input.keys[config.id];
+              if (!apiKey) {
+                throw new Error(`API key missing for configuration ${config.id}`);
+              }
+              console.log(`Creating provider instance for ${config.id} (${config.provider})`);
+              providerInstances[config.id] = createProviderInstance(config.provider, apiKey);
               configResponses[config.id] = '';
+              console.log(`Successfully created provider instance for ${config.id}`);
             } catch (error) {
               console.error(`Failed to create provider instance for ${config.id}:`, error);
-              configResponses[config.id] = `Error: Failed to initialize ${config.provider} provider`;
+              configResponses[config.id] = `Error: Failed to initialize ${config.provider} provider - ${error instanceof Error ? error.message : 'Unknown error'}`;
             }
           }
 
@@ -228,9 +237,19 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
+    console.error("Streaming API error:", error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const statusCode = error instanceof Error && error.message.includes('validation') ? 400 : 500;
+    
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+      JSON.stringify({ 
+        error: errorMessage,
+        details: error instanceof Error ? error.stack : 'No additional details'
+      }),
+      { 
+        status: statusCode, 
+        headers: { 'Content-Type': 'application/json' } 
+      }
     );
   }
 }

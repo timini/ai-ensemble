@@ -23,7 +23,7 @@ const GOOGLE_MODELS = [
   "gemini-1.5-flash-8b"
 ];
 const ANTHROPIC_MODELS = ["claude-3-opus-20240229", "claude-3-sonnet-20240229", "claude-3-haiku-20240307"];
-const GROK_MODELS = ["grok-beta", "grok-2-latest", "grok-2-public-beta"];
+const GROK_MODELS = ["grok-beta", "grok-2-latest", "grok-2-public-beta", "grok-2", "grok-1"];
 
 // --- Individual Validation/Fetching Logic (reused by the parallel procedure) ---
 
@@ -112,29 +112,52 @@ async function validateAnthropic(key: string) {
 }
 
 async function validateGrok(key: string) {
-  try {
-    const response = await fetch('https://api.x.ai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${key}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'grok-beta',
-        messages: [{ role: 'user', content: 'Test' }],
-        max_tokens: 1,
-      }),
-    });
+  const modelsToTry = ['grok-2-latest', 'grok-beta', 'grok-2', 'grok-2-public-beta'];
+  
+  for (const model of modelsToTry) {
+    try {
+      console.log(`Attempting Grok API validation with model: ${model}`);
+      const response = await fetch('https://api.x.ai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${key}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: model,
+          messages: [{ role: 'user', content: 'Test' }],
+          max_tokens: 1,
+        }),
+      });
 
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => 'Unknown error');
-      throw new Error(`Grok API error: ${response.status} ${response.statusText}`);
+      console.log(`Grok API response status for ${model}: ${response.status}`);
+      
+      if (response.ok) {
+        const data = await response.json() as Record<string, unknown>;
+        console.log(`Grok API validation successful with ${model}:`, data);
+        return; // Success, exit function
+      } else {
+        const errorText = await response.text().catch(() => 'Unknown error');
+        console.error(`Grok API error for ${model}: ${response.status} ${response.statusText} - ${errorText}`);
+        
+        // If it's a 404, try the next model; if it's auth error, throw immediately
+        if (response.status === 401 || response.status === 403) {
+          throw new Error(`Grok API authentication error: ${response.status} ${response.statusText}`);
+        }
+        // Continue to next model for 404 or other errors
+      }
+    } catch (error) {
+      console.error(`validateGrok: Exception with ${model}:`, error);
+      // If it's an authentication error, re-throw immediately
+      if (error instanceof Error && (error.message.includes('authentication') || error.message.includes('401') || error.message.includes('403'))) {
+        throw error;
+      }
+      // Otherwise, continue to next model
     }
-    
-  } catch (error) {
-    console.error("validateGrok: Exception:", error);
-    throw error;
   }
+  
+  // If we get here, all models failed
+  throw new Error('Grok API validation failed: No working models found. This may indicate the API is not available or the key is invalid.');
 }
 
 

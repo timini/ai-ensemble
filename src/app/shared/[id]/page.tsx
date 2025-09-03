@@ -3,16 +3,17 @@ import { StorageService } from '~/server/services/storage';
 import { SharedResponseViewer } from '~/app/_components/SharedResponseViewer';
 
 interface SharedPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function SharedPage({ params }: SharedPageProps) {
   const storageService = new StorageService();
+  const resolvedParams = await params;
   
   try {
-    const sharedResponse = await storageService.getSharedResponse(params.id);
+    const sharedResponse = await storageService.getSharedResponse(resolvedParams.id);
     
     if (!sharedResponse) {
       notFound();
@@ -33,9 +34,10 @@ export default async function SharedPage({ params }: SharedPageProps) {
 
 export async function generateMetadata({ params }: SharedPageProps) {
   const storageService = new StorageService();
+  const resolvedParams = await params;
   
   try {
-    const sharedResponse = await storageService.getSharedResponse(params.id);
+    const sharedResponse = await storageService.getSharedResponse(resolvedParams.id);
     
     if (!sharedResponse) {
       return {

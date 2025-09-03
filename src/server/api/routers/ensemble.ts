@@ -4,8 +4,7 @@ import cosineSimilarity from "cosine-similarity";
 import { OpenAIProvider } from "~/server/ai-providers/OpenAIProvider";
 import { GoogleProvider } from "~/server/ai-providers/GoogleProvider";
 import { AnthropicProvider } from "~/server/ai-providers/AnthropicProvider";
-import type { Provider } from "~/app/_components/ProviderSettings";
-import { createPairKey, getProviderPairs, type AgreementScores } from "~/types/agreement";
+import type { AgreementScores } from "~/types/agreement";
 
 const ProviderEnum = z.enum(["openai", "google", "anthropic", "grok"]);
 
