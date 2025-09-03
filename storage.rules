@@ -1,0 +1,20 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Rules for shared responses
+    match /shared-responses/{responseId} {
+      // Allow read access to shared responses for anyone
+      allow read: if true;
+      
+      // Allow write access for creating new shared responses
+      // In production, you might want to add authentication or rate limiting
+      allow write: if true;
+    }
+    
+    // Block all other access
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

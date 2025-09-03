@@ -1,11 +1,9 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
-import { StorageService } from '~/server/services/storage';
+import { saveSharedResponse, getSharedResponse } from '~/server/services/storage';
 import { ShareRequestSchema } from '~/types/share';
 import type { SharedResponse } from '~/types/share';
-
-const storageService = new StorageService();
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,14 +20,13 @@ export async function POST(req: NextRequest) {
       timestamp: new Date().toISOString(),
     };
 
-    // Upload to Google Cloud Storage
-    const publicUrl = await storageService.uploadSharedResponse(sharedResponse);
+    // Upload to Firebase Storage
+    const id = await saveSharedResponse(sharedResponse);
 
     return NextResponse.json({
       success: true,
-      id: sharedResponse.id,
-      url: publicUrl,
-      shareUrl: `${req.nextUrl.origin}/shared/${sharedResponse.id}`,
+      id: id,
+      shareUrl: `${req.nextUrl.origin}/shared/${id}`,
     });
   } catch (error) {
     console.error('Share API error:', error);
@@ -67,7 +64,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const sharedResponse = await storageService.getSharedResponse(id);
+    const sharedResponse = await getSharedResponse(id);
 
     if (!sharedResponse) {
       return NextResponse.json(
@@ -81,37 +78,6 @@ export async function GET(req: NextRequest) {
     console.error('Share GET API error:', error);
     return NextResponse.json(
       { error: 'Failed to retrieve shared response' },
-      { status: 500 }
-    );
-  }
-}
-
-export async function DELETE(req: NextRequest) {
-  try {
-    const { searchParams } = req.nextUrl;
-    const id = searchParams.get('id');
-
-    if (!id) {
-      return NextResponse.json(
-        { error: 'Missing id parameter' },
-        { status: 400 }
-      );
-    }
-
-    const success = await storageService.deleteSharedResponse(id);
-
-    if (!success) {
-      return NextResponse.json(
-        { error: 'Failed to delete shared response' },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Share DELETE API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete shared response' },
       { status: 500 }
     );
   }
