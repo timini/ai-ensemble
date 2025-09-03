@@ -42,7 +42,7 @@ export function SharedResponseViewer({ data }: SharedResponseViewerProps) {
           <h2 className="text-xl font-semibold mb-2">Original Prompt</h2>
           <p className="text-gray-200 leading-relaxed">{data.prompt}</p>
           <div className="mt-3 text-sm text-gray-400 flex justify-between items-center">
-            <span>Shared on {formatTimestamp(data.timestamp)}</span>
+            <span>Shared on {data.timestamp ? formatTimestamp(data.timestamp) : 'Date not available'}</span>
             <span>ID: {data.id}</span>
           </div>
         </div>
@@ -173,7 +173,7 @@ export function SharedResponseViewer({ data }: SharedResponseViewerProps) {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Created:</span>
-                  <span className="text-gray-300">{formatTimestamp(data.timestamp)}</span>
+                  <span className="text-gray-300">{data.timestamp ? formatTimestamp(data.timestamp) : 'Date not available'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Prompt Length:</span>
