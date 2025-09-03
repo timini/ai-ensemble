@@ -46,13 +46,20 @@ export function useEnsembleState() {
       }, [setInitialLoad])
   });
 
+  const getModelsMutation = api.validation.getModels.useMutation();
+
   const validateApiKeyMutation = api.validation.validateApiKey.useMutation({
     onSuccess: (data, variables) => {
       const newStatus = data.success ? "valid" : "invalid";
       setKeyStatus(prev => ({ ...prev, [variables.provider]: newStatus }));
       if (newStatus === 'valid') {
         setModelsLoading(prev => new Set(prev).add(variables.provider));
-        void utils.validation.getModels.fetch({ provider: variables.provider, key: variables.key })
+        void getModelsMutation.mutate(
+          {
+            provider: variables.provider,
+            key: variables.key
+          }
+        )
           .then(data => {
             if (data && data.length > 0) {
               setModelLists(prev => ({ ...prev, [variables.provider]: data }));

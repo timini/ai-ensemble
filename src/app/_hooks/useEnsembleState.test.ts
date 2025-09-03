@@ -18,7 +18,9 @@ vi.mock('~/trpc/react', () => ({
         })),
       },
       getModels: {
-        fetch: vi.fn(),
+        useMutation: vi.fn(() => ({
+          mutate: vi.fn(),
+        })),
       },
     },
     ensemble: {
