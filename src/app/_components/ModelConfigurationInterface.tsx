@@ -313,8 +313,8 @@ export function ModelConfigurationInterface() {
           {/* Query Form */}
           <form onSubmit={handleStreamingSubmit} className="flex flex-col gap-4">
             <PromptInput
-              value={prompt}
-              onChange={setPrompt}
+              prompt={prompt}
+              setPrompt={setPrompt}
               placeholder="Enter your prompt here..."
             />
 
