@@ -154,7 +154,7 @@ export function ModelConfigurationInterface() {
 
       case 'agreement':
         if (data.scores) {
-          setStreamingData(prev => ({ ...prev, agreementScores: data.scores as AgreementScore[] }));
+          setStreamingData(prev => ({ ...prev, agreementScores: data.scores as unknown as AgreementScore[] }));
         }
         break;
 
