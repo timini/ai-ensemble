@@ -124,8 +124,8 @@ export function ProviderConfiguration({
 
   const validateProviderKey = useCallback(async (provider: Provider, key: string) => {
     if (!key.trim()) {
-      onProviderStatusChange({ [provider]: 'unchecked' } as Partial<Record<Provider, 'valid' | 'invalid' | 'unchecked'>>);
-      onAvailableModelsChange({ [provider]: [] } as Partial<Record<Provider, string[]>>);
+      onProviderStatusChange({ ...providerStatus, [provider]: 'unchecked' });
+      onAvailableModelsChange({ ...availableModels, [provider]: [] });
       return;
     }
 
@@ -140,7 +140,7 @@ export function ProviderConfiguration({
 
       if (validationResult.success) {
         // Update status to valid
-        onProviderStatusChange({ [provider]: 'valid' } as Partial<Record<Provider, 'valid' | 'invalid' | 'unchecked'>>);
+        onProviderStatusChange({ ...providerStatus, [provider]: 'valid' });
 
         // Fetch available models
         try {
@@ -149,20 +149,20 @@ export function ProviderConfiguration({
             key,
           }) as string[];
           
-          onAvailableModelsChange({ [provider]: modelsResult } as Partial<Record<Provider, string[]>>);
+          onAvailableModelsChange({ ...availableModels, [provider]: modelsResult });
         } catch (modelsError) {
           console.error(`Error fetching models for ${provider}:`, modelsError);
-          onAvailableModelsChange({ [provider]: [] } as Partial<Record<Provider, string[]>>);
+          onAvailableModelsChange({ ...availableModels, [provider]: [] });
         }
       } else {
-        onProviderStatusChange({ [provider]: 'invalid' } as Partial<Record<Provider, 'valid' | 'invalid' | 'unchecked'>>);
-        onAvailableModelsChange({ [provider]: [] });
+        onProviderStatusChange({ ...providerStatus, [provider]: 'invalid' });
+        onAvailableModelsChange({ ...availableModels, [provider]: [] });
       }
     } catch (error) {
       console.error(`Error validating ${provider} API key:`, error);
       
-      onProviderStatusChange({ [provider]: 'invalid' });
-      onAvailableModelsChange({ [provider]: [] });
+      onProviderStatusChange({ ...providerStatus, [provider]: 'invalid' });
+      onAvailableModelsChange({ ...availableModels, [provider]: [] });
     } finally {
       setValidatingKeys(prev => {
         const newSet = new Set(prev);
@@ -170,7 +170,7 @@ export function ProviderConfiguration({
         return newSet;
       });
     }
-  }, [validateApiKeyMutation, getModelsMutation, onProviderStatusChange, onAvailableModelsChange]);
+  }, [validateApiKeyMutation, getModelsMutation, onProviderStatusChange, onAvailableModelsChange, providerStatus, availableModels]);
 
   // Debounced validation refs
   const validationTimeouts = useRef<Record<Provider, NodeJS.Timeout | null>>({
