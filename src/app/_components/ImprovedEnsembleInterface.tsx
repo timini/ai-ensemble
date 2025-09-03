@@ -441,8 +441,8 @@ export function ImprovedEnsembleInterface() {
           {/* Query Form */}
           <form onSubmit={handleStreamingSubmit} className="space-y-4">
             <PromptInput
-              value={prompt}
-              onChange={setPrompt}
+              prompt={prompt}
+              setPrompt={setPrompt}
               placeholder="Enter your prompt here..."
             />
 
