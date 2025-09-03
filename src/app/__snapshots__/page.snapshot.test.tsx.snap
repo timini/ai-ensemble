@@ -20,7 +20,7 @@ exports[`Home Page Snapshot > should match snapshot of the complete home page wi
     <p
       class="text-center text-gray-400 mb-8"
     >
-      Compare. Consensus. Confidence.
+      Comparison. Consensus. Synthesis.
     </p>
     <div
       class="space-y-6"
@@ -127,72 +127,4 @@ exports[`Home Page Snapshot > should match snapshot of the complete home page wi
     </div>
   </div>
 </main>
-`;
-
-exports[`Home Page Snapshot > should match snapshot of the home page structure 1`] = `
-<div
-  data-testid="improved-ensemble-interface"
->
-  <h1>
-    AI Ensemble - Compare Multiple AI Models
-  </h1>
-  <div
-    data-testid="configuration-section"
-  >
-    <h2>
-      Configuration
-    </h2>
-    <div
-      data-testid="provider-config"
-    >
-      Provider Configuration
-    </div>
-    <div
-      data-testid="model-selection"
-    >
-      Model Selection
-    </div>
-  </div>
-  <div
-    data-testid="selected-models"
-  >
-    Selected Models Display
-  </div>
-  <div
-    data-testid="query-form"
-  >
-    <div
-      data-testid="prompt-input"
-    >
-      Prompt Input
-    </div>
-    <div
-      data-testid="summarizer-selection"
-    >
-      Summarizer Selection
-    </div>
-    <button>
-      Compare Models
-    </button>
-  </div>
-  <div
-    data-testid="results-section"
-  >
-    <div
-      data-testid="consensus-response"
-    >
-      Consensus Response
-    </div>
-    <div
-      data-testid="agreement-analysis"
-    >
-      Agreement Analysis
-    </div>
-    <div
-      data-testid="individual-responses"
-    >
-      Individual Responses
-    </div>
-  </div>
-</div>
 `;

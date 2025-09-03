@@ -1,6 +1,6 @@
 # AI Ensemble
 
-**Tagline:** Compare. Consensus. Confidence.
+**Tagline:** Comparison. Consensus. Synthesis.
 
 ## Overview
 

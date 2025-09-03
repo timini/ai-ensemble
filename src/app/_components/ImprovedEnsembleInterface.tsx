@@ -13,6 +13,7 @@ import type { AgreementScore } from '~/types/agreement';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CopyButton } from './CopyButton';
+import { ShareButton } from './ShareButton';
 
 interface StreamingData {
   modelResponses: Record<string, string>;
@@ -490,11 +491,44 @@ export function ImprovedEnsembleInterface() {
               {/* Consensus Response and Agreement Analysis */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
                 <div className="md:col-span-2">
-                  <div className="flex items-center">
-                    <h2 className="text-2xl font-bold mb-4 border-b-2 border-[hsl(280,100%,70%)] pb-2">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-2xl font-bold border-b-2 border-[hsl(280,100%,70%)] pb-2">
                       Consensus Response {getStateIcon(streamingData.consensusState)}
                     </h2>
-                    {streamingData.consensusState === 'complete' && <CopyButton textToCopy={streamingData.consensusResponse} />}
+                    <div className="flex items-center gap-2">
+                      {streamingData.consensusState === 'complete' && (
+                        <>
+                          <ShareButton 
+                            data={{
+                              prompt,
+                              individualResponses: {
+                                openai: streamingData.modelResponses[selectedModels.find(m => m.provider === 'openai')?.id ?? ''] ?? '',
+                                google: streamingData.modelResponses[selectedModels.find(m => m.provider === 'google')?.id ?? ''] ?? '',
+                                anthropic: streamingData.modelResponses[selectedModels.find(m => m.provider === 'anthropic')?.id ?? ''] ?? '',
+                                grok: streamingData.modelResponses[selectedModels.find(m => m.provider === 'grok')?.id ?? ''] ?? '',
+                              },
+                              consensusResponse: streamingData.consensusResponse,
+                              agreementScores: streamingData.agreementScores.length > 0 ? {
+                                og: streamingData.agreementScores.find(s => (s.id1 === 'openai' && s.id2 === 'google') || (s.id1 === 'google' && s.id2 === 'openai'))?.score ?? 0,
+                                ga: streamingData.agreementScores.find(s => (s.id1 === 'google' && s.id2 === 'anthropic') || (s.id1 === 'anthropic' && s.id2 === 'google'))?.score ?? 0,
+                                ao: streamingData.agreementScores.find(s => (s.id1 === 'anthropic' && s.id2 === 'openai') || (s.id1 === 'openai' && s.id2 === 'anthropic'))?.score ?? 0,
+                              } : null,
+                              models: {
+                                openai: selectedModels.find(m => m.provider === 'openai')?.name ?? '',
+                                google: selectedModels.find(m => m.provider === 'google')?.name ?? '',
+                                anthropic: selectedModels.find(m => m.provider === 'anthropic')?.name ?? '',
+                                grok: selectedModels.find(m => m.provider === 'grok')?.name ?? '',
+                              },
+                              summarizer: { 
+                                provider: selectedModels.find(m => m.id === selectedSummarizer)?.provider ?? 'openai', 
+                                model: selectedModels.find(m => m.id === selectedSummarizer)?.name ?? 'gpt-4' 
+                              }
+                            }}
+                          />
+                          <CopyButton textToCopy={streamingData.consensusResponse} />
+                        </>
+                      )}
+                    </div>
                   </div>
                   <div className="bg-gray-800 p-6 rounded-lg">
                     <div className="prose prose-invert max-w-none">
