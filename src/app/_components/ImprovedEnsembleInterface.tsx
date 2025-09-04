@@ -514,14 +514,14 @@ export function ImprovedEnsembleInterface() {
                                 ao: streamingData.agreementScores.find(s => (s.id1 === 'anthropic' && s.id2 === 'openai') || (s.id1 === 'openai' && s.id2 === 'anthropic'))?.score ?? 0,
                               } : null,
                               models: {
-                                openai: selectedModels.find(m => m.provider === 'openai')?.name ?? '',
-                                google: selectedModels.find(m => m.provider === 'google')?.name ?? '',
-                                anthropic: selectedModels.find(m => m.provider === 'anthropic')?.name ?? '',
-                                grok: selectedModels.find(m => m.provider === 'grok')?.name ?? '',
+                                openai: selectedModels.find(m => m.provider === 'openai')?.model ?? '',
+                                google: selectedModels.find(m => m.provider === 'google')?.model ?? '',
+                                anthropic: selectedModels.find(m => m.provider === 'anthropic')?.model ?? '',
+                                grok: selectedModels.find(m => m.provider === 'grok')?.model ?? '',
                               },
                               summarizer: { 
                                 provider: selectedModels.find(m => m.id === selectedSummarizer)?.provider ?? 'openai', 
-                                model: selectedModels.find(m => m.id === selectedSummarizer)?.name ?? 'gpt-4' 
+                                model: selectedModels.find(m => m.id === selectedSummarizer)?.model ?? 'gpt-4' 
                               }
                             }}
                           />

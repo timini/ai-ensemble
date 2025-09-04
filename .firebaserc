@@ -1,5 +1,7 @@
 {
   "projects": {
     "default": "ai-ensemble-48e5f"
-  }
+  },
+  "targets": {},
+  "etags": {}
 }
