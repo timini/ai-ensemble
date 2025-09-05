@@ -9,6 +9,8 @@ export interface SelectedModel {
   name: string;
   provider: Provider;
   model: string;
+  isManual?: boolean;
+  manualResponse?: string;
 }
 
 interface ModelSelectionProps {

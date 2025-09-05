@@ -112,6 +112,19 @@ export function ImprovedEnsembleInterface() {
     }
   }, []); // Empty dependency array ensures this runs only once on mount
 
+  // Load manual responses from localStorage on initial mount
+  useEffect(() => {
+    try {
+      const savedManualResponsesJSON = localStorage.getItem('manualResponses');
+      if (savedManualResponsesJSON) {
+        const savedManualResponses = JSON.parse(savedManualResponsesJSON) as ManualResponseState;
+        setManualResponses(savedManualResponses);
+      }
+    } catch (error) {
+      console.error("Failed to load manual responses from localStorage:", error);
+    }
+  }, []); // Empty dependency array ensures this runs only once on mount
+
   // Save selected models to localStorage
   useEffect(() => {
     try {
@@ -196,7 +209,7 @@ export function ImprovedEnsembleInterface() {
       // Pass the existing responses to regenerate consensus
       existingResponses: allResponses,
     };
-  }, [createAllResponses, createAllModels, createKeysMapping, createModelsMapping, selectedModels, selectedSummarizer, prompt]);
+  }, [createAllResponsesCallback, createAllModelsCallback, createKeysMappingCallback, createModelsMappingCallback, selectedModels, selectedSummarizer, prompt]);
 
   const parseSSEData = useCallback((line: string) => {
     if (!line.startsWith('data: ')) return null;
@@ -300,7 +313,7 @@ export function ImprovedEnsembleInterface() {
     } catch (error) {
       console.error('Error regenerating consensus:', error);
     }
-  }, [createConsensusPayload, processConsensusResponse, createAllModelsCallback, createAllResponsesCallback, createKeysMappingCallback, createModelsMappingCallback]);
+  }, [createConsensusPayload, processConsensusResponse]);
 
   const handleAddManualResponse = useCallback((provider: Provider, modelName: string, response: string) => {
     // Validate the manual response
@@ -311,10 +324,17 @@ export function ImprovedEnsembleInterface() {
     }
 
     const manualId = generateManualResponseId();
-    setManualResponses(prev => ({
-      ...prev,
-      [manualId]: { provider, modelName, response }
-    }));
+    const newManualResponse = { provider, modelName, response };
+    
+    setManualResponses(prev => {
+      const updated = {
+        ...prev,
+        [manualId]: newManualResponse
+      };
+      // Save to localStorage
+      localStorage.setItem('manualResponses', JSON.stringify(updated));
+      return updated;
+    });
     
     // Add manual response to streaming data model states
     setStreamingData(prev => ({
@@ -332,6 +352,75 @@ export function ImprovedEnsembleInterface() {
     // Regenerate consensus and agreement analysis
     void regenerateConsensusWithManualResponse(manualId, provider, modelName, response);
   }, [regenerateConsensusWithManualResponse]);
+
+  const handleAddModel = useCallback((model: SelectedModel) => {
+    setSelectedModels(prev => {
+      // Check if model already exists
+      if (prev.some(m => m.id === model.id)) {
+        return prev;
+      }
+      // Check if we've reached the limit
+      if (prev.length >= 8) {
+        return prev;
+      }
+      
+      // If it's a manual response, add it to the streaming data and regenerate consensus
+      if (model.isManual && model.manualResponse) {
+        setStreamingData(prevStreaming => ({
+          ...prevStreaming,
+          modelStates: {
+            ...prevStreaming.modelStates,
+            [model.id]: 'complete'
+          },
+          modelResponses: {
+            ...prevStreaming.modelResponses,
+            [model.id]: model.manualResponse!
+          }
+        }));
+        
+        // Regenerate consensus and agreement analysis for the new manual response
+        setTimeout(() => {
+          void regenerateConsensusWithManualResponse(
+            model.id, 
+            model.provider, 
+            model.model, 
+            model.manualResponse!
+          );
+        }, 0);
+      }
+      
+      return [...prev, model];
+    });
+  }, [regenerateConsensusWithManualResponse]);
+
+  const handleRemoveModel = useCallback((modelId: string) => {
+    setSelectedModels(prev => prev.filter(m => m.id !== modelId));
+    
+    // If it's a manual response, remove it from manual responses state
+    if (modelId.startsWith('manual-')) {
+      setManualResponses(prev => {
+        const newManualResponses = { ...prev };
+        delete newManualResponses[modelId];
+        // Update localStorage
+        localStorage.setItem('manualResponses', JSON.stringify(newManualResponses));
+        return newManualResponses;
+      });
+      
+      // Remove from streaming data
+      setStreamingData(prev => {
+        const newModelStates = { ...prev.modelStates };
+        const newModelResponses = { ...prev.modelResponses };
+        delete newModelStates[modelId];
+        delete newModelResponses[modelId];
+        
+        return {
+          ...prev,
+          modelStates: newModelStates,
+          modelResponses: newModelResponses
+        };
+      });
+    }
+  }, []);
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
   const handleStreamingSubmit = async (e: React.FormEvent) => {
@@ -633,7 +722,13 @@ export function ImprovedEnsembleInterface() {
           </div>
 
           {/* Selected Models Display */}
-          <SelectedModelsDisplay selectedModels={selectedModels} />
+          <SelectedModelsDisplay 
+            selectedModels={selectedModels}
+            availableModels={availableModels}
+            providerStatus={providerStatus}
+            onAddModel={handleAddModel}
+            onRemoveModel={handleRemoveModel}
+          />
 
           {/* Query Form */}
           <form onSubmit={handleStreamingSubmit} className="space-y-4">

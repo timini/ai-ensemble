@@ -1,14 +1,29 @@
 "use client";
 
+import { useState } from 'react';
 import { getProviderColor } from '~/types/modelConfig';
 import type { SelectedModel } from './ModelSelection';
+import type { Provider } from './ProviderSettings';
+import { AddModelModal } from './AddModelModal';
 
 interface SelectedModelsDisplayProps {
   selectedModels: SelectedModel[];
   validationResults?: Record<string, 'valid' | 'invalid' | 'pending'>;
+  availableModels: Record<Provider, string[]>;
+  providerStatus: Record<Provider, 'valid' | 'invalid' | 'unchecked'>;
+  onAddModel: (model: SelectedModel) => void;
+  onRemoveModel: (modelId: string) => void;
 }
 
-export function SelectedModelsDisplay({ selectedModels, validationResults }: SelectedModelsDisplayProps) {
+export function SelectedModelsDisplay({ 
+  selectedModels, 
+  validationResults, 
+  availableModels, 
+  providerStatus, 
+  onAddModel, 
+  onRemoveModel 
+}: SelectedModelsDisplayProps) {
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   if (selectedModels.length === 0) {
     return (
       <div className="bg-gray-800 border-2 border-dashed border-gray-600 rounded-lg p-8 text-center">
@@ -56,7 +71,7 @@ export function SelectedModelsDisplay({ selectedModels, validationResults }: Sel
         {selectedModels.map((model, index) => (
           <div
             key={model.id}
-            className="bg-gray-800 border border-gray-600 rounded-lg p-4 hover:border-gray-500 transition-colors"
+            className="bg-gray-800 border border-gray-600 rounded-lg p-4 hover:border-gray-500 transition-colors relative group"
           >
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-2">
@@ -67,9 +82,25 @@ export function SelectedModelsDisplay({ selectedModels, validationResults }: Sel
                 <span className="text-xs font-medium text-gray-400">
                   #{index + 1}
                 </span>
+                {model.isManual && (
+                  <span className="text-xs bg-blue-600 text-white px-2 py-1 rounded">
+                    Manual
+                  </span>
+                )}
               </div>
-              <div className={`text-sm ${getValidationColor(model.id)}`}>
-                {getValidationIcon(model.id)}
+              <div className="flex items-center gap-2">
+                <div className={`text-sm ${getValidationColor(model.id)}`}>
+                  {getValidationIcon(model.id)}
+                </div>
+                {selectedModels.length > 2 && (
+                  <button
+                    onClick={() => onRemoveModel(model.id)}
+                    className="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 text-sm transition-opacity"
+                    title="Remove model"
+                  >
+                    ×
+                  </button>
+                )}
               </div>
             </div>
 
@@ -83,19 +114,29 @@ export function SelectedModelsDisplay({ selectedModels, validationResults }: Sel
               <div className="text-xs text-gray-500">
                 {model.provider.charAt(0).toUpperCase() + model.provider.slice(1)}
               </div>
+              {model.isManual && model.manualResponse && (
+                <div className="text-xs text-gray-500 mt-2 p-2 bg-gray-700 rounded">
+                  <div className="truncate" title={model.manualResponse}>
+                    &ldquo;{model.manualResponse.substring(0, 50)}...&rdquo;
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ))}
 
         {/* Placeholder for additional models */}
         {selectedModels.length < 8 && (
-          <div className="bg-gray-800 border-2 border-dashed border-gray-600 rounded-lg p-4 flex items-center justify-center hover:border-gray-500 transition-colors">
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="bg-gray-800 border-2 border-dashed border-gray-600 rounded-lg p-4 flex items-center justify-center hover:border-gray-500 transition-colors w-full text-left"
+          >
             <div className="text-center text-gray-400">
               <div className="text-2xl mb-1">+</div>
               <div className="text-xs">Add Model</div>
               <div className="text-xs">({8 - selectedModels.length} slots left)</div>
             </div>
-          </div>
+          </button>
         )}
       </div>
 
@@ -126,6 +167,15 @@ export function SelectedModelsDisplay({ selectedModels, validationResults }: Sel
           </div>
         </div>
       </div>
+
+      {/* Add Model Modal */}
+      <AddModelModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAddModel={onAddModel}
+        availableModels={availableModels}
+        providerStatus={providerStatus}
+      />
     </div>
   );
 }
