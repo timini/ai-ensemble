@@ -33,13 +33,13 @@ serviceConfig:
 env:
   - variable: OPENAI_API_KEY
     secret: openai-api-key
-    availability: RUNTIME
+    availability: [RUNTIME]
   - variable: GOOGLE_API_KEY
     secret: google-api-key
-    availability: RUNTIME
+    availability: [RUNTIME]
   - variable: ANTHROPIC_API_KEY
     secret: anthropic-api-key
-    availability: RUNTIME
+    availability: [RUNTIME]
   - variable: GROK_API_KEY
     secret: grok-api-key
-    availability: RUNTIME
+    availability: [RUNTIME]
