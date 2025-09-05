@@ -8,12 +8,18 @@ buildConfig:
   output: ".next"
   nodeVersion: "20"
   environmentVariables:
-    NEXT_PUBLIC_FIREBASE_API_KEY: "AIzaSyBtVk1-az-IwaSBPWAArwtEZRnO6YiPJaQ"
-    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "ai-ensemble-48e5f.firebaseapp.com"
-    NEXT_PUBLIC_FIREBASE_PROJECT_ID: "ai-ensemble-48e5f"
-    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: "ai-ensemble-48e5f.appspot.com"
-    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: "321456609219"
-    NEXT_PUBLIC_FIREBASE_APP_ID: "1:321456609219:web:86af9f0a8811bd1f018f76"
+    - name: NEXT_PUBLIC_FIREBASE_API_KEY
+      secret: firebase-api-key
+    - name: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+      secret: firebase-auth-domain
+    - name: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+      secret: firebase-project-id
+    - name: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+      secret: firebase-storage-bucket
+    - name: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+      secret: firebase-messaging-sender-id
+    - name: NEXT_PUBLIC_FIREBASE_APP_ID
+      secret: firebase-app-id
 
 serviceConfig:
   cpu: 1
