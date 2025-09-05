@@ -7,6 +7,6 @@ describe('Header', () => {
 
     const heading = screen.getByRole('heading', { level: 1 });
     expect(heading).toHaveTextContent(/ai ensemble/i);
-    expect(screen.getByText('Comparison. Consensus. Synthesis.')).toBeInTheDocument();
+    expect(screen.getByText('The smartest AI is an ensemble')).toBeInTheDocument();
   });
 });

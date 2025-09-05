@@ -61,7 +61,7 @@ describe('ImprovedEnsembleInterface', () => {
     
     expect(screen.getByText('AI')).toBeInTheDocument();
     expect(screen.getByText('Ensemble')).toBeInTheDocument();
-    expect(screen.getByText('Comparison. Consensus. Synthesis.')).toBeInTheDocument();
+    expect(screen.getByText('The smartest AI is an ensemble')).toBeInTheDocument();
   });
 
   it('should render configuration section', () => {

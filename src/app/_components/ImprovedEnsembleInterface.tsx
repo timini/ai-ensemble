@@ -140,18 +140,45 @@ export function ImprovedEnsembleInterface() {
     setAvailableModels(prevModels => ({ ...prevModels, ...newlyFetchedModels }));
   }, []);
 
-  const createConsensusPayload = useCallback((manualId: string, provider: Provider, modelName: string, response: string) => {
-    // Combine all responses (streaming + manual)
-    const allResponses = {
+  const createAllResponses = useCallback((manualId: string, response: string) => {
+    return {
       ...streamingData.modelResponses,
       [manualId]: response
     };
+  }, [streamingData.modelResponses]);
 
-    // Create a combined model list for consensus generation
-    const allModels = [
+  const createAllModels = useCallback((manualId: string, provider: Provider, modelName: string) => {
+    return [
       ...selectedModels,
       { id: manualId, name: `${provider.charAt(0).toUpperCase() + provider.slice(1)} - ${modelName}`, provider, model: modelName }
     ];
+  }, [selectedModels]);
+
+  const createKeysMapping = useCallback((allModels: Array<{ id: string; provider: Provider }>) => {
+    return allModels.reduce((acc, m) => {
+      // For manual responses, we don't need API keys
+      if (m.id.startsWith('manual-')) {
+        acc[m.id] = 'manual-response';
+      } else {
+        acc[m.id] = providerKeys[m.provider];
+      }
+      return acc;
+    }, {} as Record<string, string>);
+  }, [providerKeys]);
+
+  const createModelsMapping = useCallback((allModels: Array<{ id: string; model: string }>) => {
+    return allModels.reduce((acc, m) => {
+      acc[m.id] = m.model;
+      return acc;
+    }, {} as Record<string, string>);
+  }, []);
+
+  const createConsensusPayload = useCallback((manualId: string, provider: Provider, modelName: string, response: string) => {
+    // Combine all responses (streaming + manual)
+    const allResponses = createAllResponses(manualId, response);
+
+    // Create a combined model list for consensus generation
+    const allModels = createAllModels(manualId, provider, modelName);
 
     // Get the summarizer config
     const summarizerConfig = selectedModels.find(m => m.id === selectedSummarizer);
@@ -167,19 +194,8 @@ export function ImprovedEnsembleInterface() {
         provider: m.provider,
         model: m.model,
       })),
-      keys: allModels.reduce((acc, m) => {
-        // For manual responses, we don't need API keys
-        if (m.id.startsWith('manual-')) {
-          acc[m.id] = 'manual-response';
-        } else {
-          acc[m.id] = providerKeys[m.provider];
-        }
-        return acc;
-      }, {} as Record<string, string>),
-      models: allModels.reduce((acc, m) => {
-        acc[m.id] = m.model;
-        return acc;
-      }, {} as Record<string, string>),
+      keys: createKeysMapping(allModels),
+      models: createModelsMapping(allModels),
       summarizer: {
         configId: summarizerConfig.id,
         provider: summarizerConfig.provider,
@@ -188,7 +204,49 @@ export function ImprovedEnsembleInterface() {
       // Pass the existing responses to regenerate consensus
       existingResponses: allResponses,
     };
-  }, [streamingData.modelResponses, selectedModels, selectedSummarizer, prompt, providerKeys]);
+  }, [createAllResponses, createAllModels, createKeysMapping, createModelsMapping, selectedModels, selectedSummarizer, prompt]);
+
+  const parseSSEData = useCallback((line: string) => {
+    if (!line.startsWith('data: ')) return null;
+    
+    try {
+      return JSON.parse(line.slice(6)) as {
+        type: string;
+        content?: string;
+        scores?: AgreementScore[];
+        [key: string]: unknown;
+      };
+    } catch (error) {
+      console.error('Error parsing SSE data:', error);
+      return null;
+    }
+  }, []);
+
+  const processSSEChunk = useCallback((chunk: string, consensusResponse: string, agreementScores: AgreementScore[]) => {
+    const lines = chunk.split('\n');
+    let newConsensusResponse = consensusResponse;
+    let newAgreementScores = agreementScores;
+
+    for (const line of lines) {
+      const data = parseSSEData(line);
+      if (!data) continue;
+
+      switch (data.type) {
+        case 'consensus_chunk':
+          if (data.content) {
+            newConsensusResponse += data.content;
+          }
+          break;
+        case 'agreement':
+          if (data.scores) {
+            newAgreementScores = data.scores;
+          }
+          break;
+      }
+    }
+
+    return { newConsensusResponse, newAgreementScores };
+  }, [parseSSEData]);
 
   const processConsensusResponse = useCallback(async (response: Response) => {
     if (!response.ok) {
@@ -209,43 +267,20 @@ export function ImprovedEnsembleInterface() {
       if (done) break;
 
       const chunk = decoder.decode(value);
-      const lines = chunk.split('\n');
-
-      for (const line of lines) {
-        if (line.startsWith('data: ')) {
-          try {
-            const data = JSON.parse(line.slice(6)) as {
-              type: string;
-              content?: string;
-              scores?: AgreementScore[];
-              [key: string]: unknown;
-            };
-
-            switch (data.type) {
-              case 'consensus_chunk':
-                if (data.content) {
-                  newConsensusResponse += data.content;
-                }
-                break;
-              case 'agreement':
-                if (data.scores) {
-                  newAgreementScores = data.scores;
-                }
-                break;
-            }
-          } catch (error) {
-            console.error('Error parsing SSE data:', error);
-          }
-        }
-      }
+      const result = processSSEChunk(chunk, newConsensusResponse, newAgreementScores);
+      newConsensusResponse = result.newConsensusResponse;
+      newAgreementScores = result.newAgreementScores;
     }
 
     return { newConsensusResponse, newAgreementScores };
-  }, []);
+  }, [processSSEChunk]);
 
   const regenerateConsensusWithManualResponse = useCallback(async (manualId: string, provider: Provider, modelName: string, response: string) => {
     try {
+      console.log('Regenerating consensus with manual response:', { manualId, provider, modelName });
+      
       const payload = createConsensusPayload(manualId, provider, modelName, response);
+      console.log('Payload for regeneration:', payload);
       
       const response_api = await fetch('/api/ensemble-stream-v2', {
         method: 'POST',
@@ -253,7 +288,13 @@ export function ImprovedEnsembleInterface() {
         body: JSON.stringify(payload),
       });
 
+      if (!response_api.ok) {
+        throw new Error(`HTTP error! status: ${response_api.status}`);
+      }
+
       const { newConsensusResponse, newAgreementScores } = await processConsensusResponse(response_api);
+      console.log('New consensus response:', newConsensusResponse);
+      console.log('New agreement scores:', newAgreementScores);
 
       // Update the streaming data with new consensus and agreement scores
       setStreamingData(prev => ({
@@ -274,6 +315,19 @@ export function ImprovedEnsembleInterface() {
     setManualResponses(prev => ({
       ...prev,
       [manualId]: { provider, modelName, response }
+    }));
+    
+    // Add manual response to streaming data model states
+    setStreamingData(prev => ({
+      ...prev,
+      modelStates: {
+        ...prev.modelStates,
+        [manualId]: 'complete'
+      },
+      modelResponses: {
+        ...prev.modelResponses,
+        [manualId]: response
+      }
     }));
     
     // Regenerate consensus and agreement analysis
@@ -721,7 +775,7 @@ export function ImprovedEnsembleInterface() {
               <div>
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Individual Responses</h2>
-                  {streamingData.consensusState === 'complete' && (
+                  {selectedModels.every(model => streamingData.modelStates[model.id] === 'complete') && (
                     <button
                       onClick={() => setIsManualResponseModalOpen(true)}
                       className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"

@@ -7,20 +7,34 @@ exports[`Home Page Snapshot > should match snapshot of the complete home page wi
   <div
     class="w-full max-w-6xl"
   >
-    <h1
-      class="text-4xl md:text-5xl font-extrabold tracking-tight text-center mb-4"
+    <div
+      class="flex justify-between items-center mb-4"
     >
-      AI 
-      <span
-        class="text-[hsl(280,100%,70%)]"
+      <a
+        class="text-gray-400 hover:text-white transition-colors"
+        href="/about"
       >
-        Ensemble
-      </span>
-    </h1>
+        About
+      </a>
+      <h1
+        class="text-4xl md:text-5xl font-extrabold tracking-tight text-center"
+      >
+        AI 
+        <span
+          class="text-[hsl(280,100%,70%)]"
+        >
+          Ensemble
+        </span>
+      </h1>
+      <div
+        class="w-12"
+      />
+       
+    </div>
     <p
       class="text-center text-gray-400 mb-8"
     >
-      Comparison. Consensus. Synthesis.
+      The smartest AI is an ensemble
     </p>
     <div
       class="space-y-6"
