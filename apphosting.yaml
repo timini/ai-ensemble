@@ -7,39 +7,36 @@ nextjs:
 buildConfig:
   output: ".next"
   nodeVersion: "20"
-  environmentVariables:
-    - name: NEXT_PUBLIC_FIREBASE_API_KEY
-      secret: firebase-api-key
-    - name: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-      secret: firebase-auth-domain
-    - name: NEXT_PUBLIC_FIREBASE_PROJECT_ID
-      secret: firebase-project-id
-    - name: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-      secret: firebase-storage-bucket
-    - name: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-      secret: firebase-messaging-sender-id
-    - name: NEXT_PUBLIC_FIREBASE_APP_ID
-      secret: firebase-app-id
+  # environmentVariables:
+  #   - name: NEXT_PUBLIC_FIREBASE_API_KEY
+  #     secret: firebase-api-key
+  #   - name: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+  #     secret: firebase-auth-domain
+  #   - name: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+  #     secret: firebase-project-id
+  #   - name: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+  #     secret: firebase-storage-bucket
+  #   - name: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+  #     secret: firebase-messaging-sender-id
+  #   - name: NEXT_PUBLIC_FIREBASE_APP_ID
+  #     secret: firebase-app-id
 
 serviceConfig:
   cpu: 1
   memory: "512Mi"
   concurrency: 80
 
-# Environment variables and secrets available at RUNTIME.
-# These are securely injected into the Cloud Run service and are not available
-# during the build process. This is the recommended approach for all server-side
-# secrets and configurations, as outlined in the solution architecture.
-env:
-  - variable: OPENAI_API_KEY
-    secret: openai-api-key
-    availability: [RUNTIME]
-  - variable: GOOGLE_API_KEY
-    secret: google-api-key
-    availability: [RUNTIME]
-  - variable: ANTHROPIC_API_KEY
-    secret: anthropic-api-key
-    availability: [RUNTIME]
-  - variable: GROK_API_KEY
-    secret: grok-api-key
-    availability: [RUNTIME]
+# Environment variables and secrets disabled for no-env build
+# env:
+#   - variable: OPENAI_API_KEY
+#     secret: openai-api-key
+#     availability: [RUNTIME]
+#   - variable: GOOGLE_API_KEY
+#     secret: google-api-key
+#     availability: [RUNTIME]
+#   - variable: ANTHROPIC_API_KEY
+#     secret: anthropic-api-key
+#     availability: [RUNTIME]
+#   - variable: GROK_API_KEY
+#     secret: grok-api-key
+#     availability: [RUNTIME]
