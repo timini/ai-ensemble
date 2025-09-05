@@ -141,9 +141,15 @@ export function ImprovedEnsembleInterface() {
   }, []);
 
   const createAllResponses = useCallback((manualId: string, response: string) => {
+    // Convert manual responses to the expected format (id -> response string)
+    const manualResponseStrings = Object.entries(manualResponses).reduce((acc, [id, manualResponse]) => {
+      acc[id] = manualResponse.response;
+      return acc;
+    }, {} as Record<string, string>);
+
     return {
       ...streamingData.modelResponses,
-      ...manualResponses,
+      ...manualResponseStrings,
       [manualId]: response
     };
   }, [streamingData.modelResponses, manualResponses]);

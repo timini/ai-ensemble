@@ -106,9 +106,9 @@ export function ConsensusDiagram({ scores, models }: ConsensusDiagramProps) {
         ))}
       </div>
       {/* Agreement Score Key */}
-      <div className="text-xs text-center text-gray-200 mt-4 grid grid-cols-1 gap-1 w-full">
+      <div className="text-xs text-center text-gray-200 mt-4 grid grid-cols-1 gap-1 w-full" data-testid="agreement-scores">
         {scores.map(({ id1, id2, score }, index) => (
-          <div key={`${id1}-${id2}`}>
+          <div key={`${id1}-${id2}`} data-testid="agreement-score">
             <span className="font-bold text-gray-100">{String.fromCharCode(65 + index)}:</span>
             {' '}
             <span className="font-semibold text-gray-300">{nameMap.get(id1)?.split(' ').pop()}</span>

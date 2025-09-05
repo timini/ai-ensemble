@@ -122,25 +122,30 @@
     "updateSourceMethod": "patch",
     "version": "1.55.0",
     "workers": 5,
-    "webServer": null
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
   },
   "suites": [
     {
-      "title": "smoke.spec.ts",
-      "file": "smoke.spec.ts",
+      "title": "manual-response-debug.spec.ts",
+      "file": "manual-response-debug.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Smoke Tests",
-          "file": "smoke.spec.ts",
+          "title": "Manual Response Debug",
+          "file": "manual-response-debug.spec.ts",
           "line": 3,
           "column": 6,
           "specs": [
             {
-              "title": "should load the application without errors",
-              "ok": false,
+              "title": "should show manual response in agreement analysis when added",
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -153,1050 +158,462 @@
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 6057,
+                      "status": "interrupted",
+                      "duration": 24185,
                       "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('text=Configuration')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=Configuration')\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('text=Configuration')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=Configuration')\u001b[22m\n\n    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:18:54",
+                        "message": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Compare\")')\u001b[22m\n\u001b[2m    - locator resolved to <button disabled type=\"submit\" class=\"bg-[hsl(280,100%,70%)] text-white font-bold py-2 px-6 rounded-lg hover:bg-[hsl(280,100%,60%)] disabled:bg-gray-600 disabled:cursor-not-allowed\">Compare 0 Models</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    40 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not enabled\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+                        "stack": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Compare\")')\u001b[22m\n\u001b[2m    - locator resolved to <button disabled type=\"submit\" class=\"bg-[hsl(280,100%,70%)] text-white font-bold py-2 px-6 rounded-lg hover:bg-[hsl(280,100%,60%)] disabled:bg-gray-600 disabled:cursor-not-allowed\">Compare 0 Models</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    40 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not enabled\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts:58:16",
                         "location": {
-                          "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                          "column": 54,
-                          "line": 18
+                          "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts",
+                          "column": 16,
+                          "line": 58
                         },
-                        "snippet": "\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Basic UI elements should be present\u001b[39m\n \u001b[90m 17 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'h1'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Configuration'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'textarea[placeholder*=\"Enter your prompt here\"]'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 20 |\u001b[39m     \n \u001b[90m 21 |\u001b[39m     \u001b[90m// Should not have critical JavaScript errors\u001b[39m\u001b[0m"
+                        "snippet": "\u001b[0m \u001b[90m 56 |\u001b[39m\n \u001b[90m 57 |\u001b[39m     \u001b[90m// Try to submit (this might fail due to fake keys)\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 58 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'button:has-text(\"Compare\")'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 59 |\u001b[39m\n \u001b[90m 60 |\u001b[39m     \u001b[90m// Wait a bit to see what happens\u001b[39m\n \u001b[90m 61 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m3000\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
                           "location": {
-                            "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                            "column": 54,
-                            "line": 18
+                            "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts",
+                            "column": 16,
+                            "line": 58
                           },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('text=Configuration')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=Configuration')\u001b[22m\n\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Basic UI elements should be present\u001b[39m\n \u001b[90m 17 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'h1'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Configuration'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'textarea[placeholder*=\"Enter your prompt here\"]'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 20 |\u001b[39m     \n \u001b[90m 21 |\u001b[39m     \u001b[90m// Should not have critical JavaScript errors\u001b[39m\u001b[0m\n\u001b[2m    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:18:54\u001b[22m"
+                          "message": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Compare\")')\u001b[22m\n\u001b[2m    - locator resolved to <button disabled type=\"submit\" class=\"bg-[hsl(280,100%,70%)] text-white font-bold py-2 px-6 rounded-lg hover:bg-[hsl(280,100%,60%)] disabled:bg-gray-600 disabled:cursor-not-allowed\">Compare 0 Models</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    40 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not enabled\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n\n\u001b[0m \u001b[90m 56 |\u001b[39m\n \u001b[90m 57 |\u001b[39m     \u001b[90m// Try to submit (this might fail due to fake keys)\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 58 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'button:has-text(\"Compare\")'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 59 |\u001b[39m\n \u001b[90m 60 |\u001b[39m     \u001b[90m// Wait a bit to see what happens\u001b[39m\n \u001b[90m 61 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m3000\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts:58:16\u001b[22m"
                         }
                       ],
-                      "stdout": [],
+                      "stdout": [
+                        {
+                          "text": "Browser console: %c >> mutation #1 %cvalidation.validateApiKey%c %O \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n   \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n  ; font-weight: bold; \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n  ; font-weight: normal; {input: Object, context: Object}\n"
+                        },
+                        {
+                          "text": "Browser console: %c >> mutation #2 %cvalidation.validateApiKey%c %O \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n   \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n  ; font-weight: bold; \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n  ; font-weight: normal; {input: Object, context: Object}\n"
+                        },
+                        {
+                          "text": "Browser console: %c << mutation #2 %cvalidation.validateApiKey%c %O \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n   \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n  ; font-weight: bold; \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n  ; font-weight: normal; {input: Object, result: TRPCClientError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googlea…, elapsedMs: 715, context: Object}\n"
+                        },
+                        {
+                          "text": "Browser console: Error validating google API key: TRPCClientError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:countTokens: [400 Bad Request] API key not valid. Please pass a valid API key. [{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API key not valid. Please pass a valid API key.\"}]\n    at TRPCClientError.from (http://localhost:3000/_next/static/chunks/node_modules_f03ea8c3._.js:835:48)\n    at http://localhost:3000/_next/static/chunks/node_modules_f03ea8c3._.js:5952:231\n"
+                        },
+                        {
+                          "text": "Browser console: %c << mutation #1 %cvalidation.validateApiKey%c %O \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n   \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n  ; font-weight: bold; \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n  ; font-weight: normal; {input: Object, result: TRPCClientError: 401 Incorrect API key provided: test-ope***-key. You can find your API key at http…, elapsedMs: 994, context: Object}\n"
+                        },
+                        {
+                          "text": "Browser console: Error validating openai API key: TRPCClientError: 401 Incorrect API key provided: test-ope***-key. You can find your API key at https://platform.openai.com/account/api-keys.\n    at TRPCClientError.from (http://localhost:3000/_next/static/chunks/node_modules_f03ea8c3._.js:835:48)\n    at http://localhost:3000/_next/static/chunks/node_modules_f03ea8c3._.js:5952:231\n"
+                        },
+                        {
+                          "text": "Found 0 checkboxes\n"
+                        }
+                      ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-09-04T21:52:50.669Z",
+                      "startTime": "2025-09-05T09:58:12.252Z",
                       "annotations": [],
                       "attachments": [
                         {
                           "name": "screenshot",
                           "contentType": "image/png",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-load-the-application-without-errors-chromium/test-failed-1.png"
+                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/manual-response-debug-Manu-8f7c4-reement-analysis-when-added-chromium/test-failed-1.png"
                         },
                         {
                           "name": "video",
                           "contentType": "video/webm",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-load-the-application-without-errors-chromium/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-load-the-application-without-errors-chromium/error-context.md"
+                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/manual-response-debug-Manu-8f7c4-reement-analysis-when-added-chromium/video.webm"
                         }
                       ],
                       "errorLocation": {
-                        "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                        "column": 54,
-                        "line": 18
+                        "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts",
+                        "column": 16,
+                        "line": 58
                       }
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "skipped"
                 }
               ],
-              "id": "4219922fea2e2bd3c691-21aeadcefa99d8c71a77",
-              "file": "smoke.spec.ts",
-              "line": 4,
+              "id": "75a70cb608a965d39b2f-89b13b61f781d3bfab03",
+              "file": "manual-response-debug.spec.ts",
+              "line": 8,
               "column": 3
             },
             {
-              "title": "should have working navigation and basic interactions",
-              "ok": false,
+              "title": "should show manual response in agreement analysis when added",
+              "ok": true,
               "tags": [],
               "tests": [
                 {
                   "timeout": 30000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
                   "results": [
                     {
                       "workerIndex": 1,
                       "parallelIndex": 1,
-                      "status": "failed",
-                      "duration": 6049,
+                      "status": "interrupted",
+                      "duration": 23212,
                       "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m()\u001b[22m failed\n\nLocator:  locator('text=Configure Providers (0/4)')\nExpected: enabled\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=Configure Providers (0/4)')\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m()\u001b[22m failed\n\nLocator:  locator('text=Configure Providers (0/4)')\nExpected: enabled\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=Configure Providers (0/4)')\u001b[22m\n\n    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:34:66",
+                        "message": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Compare\")')\u001b[22m\n\u001b[2m    - locator resolved to <button disabled type=\"submit\" class=\"bg-[hsl(280,100%,70%)] text-white font-bold py-2 px-6 rounded-lg hover:bg-[hsl(280,100%,60%)] disabled:bg-gray-600 disabled:cursor-not-allowed\">Compare 0 Models</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    36 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not enabled\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+                        "stack": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Compare\")')\u001b[22m\n\u001b[2m    - locator resolved to <button disabled type=\"submit\" class=\"bg-[hsl(280,100%,70%)] text-white font-bold py-2 px-6 rounded-lg hover:bg-[hsl(280,100%,60%)] disabled:bg-gray-600 disabled:cursor-not-allowed\">Compare 0 Models</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    36 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not enabled\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts:58:16",
                         "location": {
-                          "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                          "column": 66,
-                          "line": 34
+                          "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts",
+                          "column": 16,
+                          "line": 58
                         },
-                        "snippet": "\u001b[0m \u001b[90m 32 |\u001b[39m     \n \u001b[90m 33 |\u001b[39m     \u001b[90m// Test that buttons are clickable\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 34 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Configure Providers (0/4)'\u001b[39m))\u001b[33m.\u001b[39mtoBeEnabled()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 35 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Select Models (0/8)'\u001b[39m))\u001b[33m.\u001b[39mtoBeEnabled()\u001b[33m;\u001b[39m\n \u001b[90m 36 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'button:has-text(\"Compare 0 Models\")'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 37 |\u001b[39m     \u001b[0m"
+                        "snippet": "\u001b[0m \u001b[90m 56 |\u001b[39m\n \u001b[90m 57 |\u001b[39m     \u001b[90m// Try to submit (this might fail due to fake keys)\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 58 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'button:has-text(\"Compare\")'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 59 |\u001b[39m\n \u001b[90m 60 |\u001b[39m     \u001b[90m// Wait a bit to see what happens\u001b[39m\n \u001b[90m 61 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m3000\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
                           "location": {
-                            "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                            "column": 66,
-                            "line": 34
+                            "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts",
+                            "column": 16,
+                            "line": 58
                           },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m()\u001b[22m failed\n\nLocator:  locator('text=Configure Providers (0/4)')\nExpected: enabled\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=Configure Providers (0/4)')\u001b[22m\n\n\n\u001b[0m \u001b[90m 32 |\u001b[39m     \n \u001b[90m 33 |\u001b[39m     \u001b[90m// Test that buttons are clickable\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 34 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Configure Providers (0/4)'\u001b[39m))\u001b[33m.\u001b[39mtoBeEnabled()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 35 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Select Models (0/8)'\u001b[39m))\u001b[33m.\u001b[39mtoBeEnabled()\u001b[33m;\u001b[39m\n \u001b[90m 36 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'button:has-text(\"Compare 0 Models\")'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 37 |\u001b[39m     \u001b[0m\n\u001b[2m    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:34:66\u001b[22m"
+                          "message": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Compare\")')\u001b[22m\n\u001b[2m    - locator resolved to <button disabled type=\"submit\" class=\"bg-[hsl(280,100%,70%)] text-white font-bold py-2 px-6 rounded-lg hover:bg-[hsl(280,100%,60%)] disabled:bg-gray-600 disabled:cursor-not-allowed\">Compare 0 Models</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    36 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not enabled\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n\n\u001b[0m \u001b[90m 56 |\u001b[39m\n \u001b[90m 57 |\u001b[39m     \u001b[90m// Try to submit (this might fail due to fake keys)\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 58 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'button:has-text(\"Compare\")'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 59 |\u001b[39m\n \u001b[90m 60 |\u001b[39m     \u001b[90m// Wait a bit to see what happens\u001b[39m\n \u001b[90m 61 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m3000\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts:58:16\u001b[22m"
                         }
                       ],
-                      "stdout": [],
+                      "stdout": [
+                        {
+                          "text": "Browser console: [Fast Refresh] rebuilding\n"
+                        },
+                        {
+                          "text": "Browser console: [Fast Refresh] done in 126ms\n"
+                        },
+                        {
+                          "text": "Browser console: [Fast Refresh] rebuilding\n"
+                        },
+                        {
+                          "text": "Browser console: [Fast Refresh] done in 109ms\n"
+                        },
+                        {
+                          "text": "Browser console:  >> mutation #1  validation.validateApiKey   JSHandle@object\n"
+                        },
+                        {
+                          "text": "Browser console:  >> mutation #2  validation.validateApiKey   JSHandle@object\n"
+                        },
+                        {
+                          "text": "Browser console:  << mutation #1  validation.validateApiKey   JSHandle@object\n"
+                        },
+                        {
+                          "text": "Browser console: Error validating openai API key: Error\n"
+                        },
+                        {
+                          "text": "Browser console:  << mutation #2  validation.validateApiKey   JSHandle@object\n"
+                        },
+                        {
+                          "text": "Browser console: Error validating google API key: Error\n"
+                        },
+                        {
+                          "text": "Found 0 checkboxes\n"
+                        },
+                        {
+                          "text": "Browser console: [JavaScript Warning: \"The resource at “http://localhost:3000/_next/static/media/caa3a2e1cccd8315-s.p.6435ea53.woff2” preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://localhost:3000/\" line: 0}]\n"
+                        }
+                      ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-09-04T21:52:50.669Z",
+                      "startTime": "2025-09-05T09:58:12.243Z",
                       "annotations": [],
                       "attachments": [
                         {
                           "name": "screenshot",
                           "contentType": "image/png",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-h-5913b-tion-and-basic-interactions-chromium/test-failed-1.png"
+                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/manual-response-debug-Manu-8f7c4-reement-analysis-when-added-firefox/test-failed-1.png"
                         },
                         {
                           "name": "video",
                           "contentType": "video/webm",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-h-5913b-tion-and-basic-interactions-chromium/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-h-5913b-tion-and-basic-interactions-chromium/error-context.md"
+                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/manual-response-debug-Manu-8f7c4-reement-analysis-when-added-firefox/video.webm"
                         }
                       ],
                       "errorLocation": {
-                        "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                        "column": 66,
-                        "line": 34
+                        "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts",
+                        "column": 16,
+                        "line": 58
                       }
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "skipped"
                 }
               ],
-              "id": "4219922fea2e2bd3c691-3164bab74fe561a082d4",
-              "file": "smoke.spec.ts",
-              "line": 29,
+              "id": "75a70cb608a965d39b2f-50f948ee4c87be6e63f2",
+              "file": "manual-response-debug.spec.ts",
+              "line": 8,
               "column": 3
             },
             {
-              "title": "should handle provider configuration modal",
-              "ok": false,
+              "title": "should show manual response in agreement analysis when added",
+              "ok": true,
               "tags": [],
               "tests": [
                 {
                   "timeout": 30000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
                   "results": [
                     {
                       "workerIndex": 2,
                       "parallelIndex": 2,
-                      "status": "timedOut",
-                      "duration": 30839,
+                      "status": "interrupted",
+                      "duration": 24195,
                       "error": {
-                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        "message": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Compare\")')\u001b[22m\n\u001b[2m    - locator resolved to <button disabled type=\"submit\" class=\"bg-[hsl(280,100%,70%)] text-white font-bold py-2 px-6 rounded-lg hover:bg-[hsl(280,100%,60%)] disabled:bg-gray-600 disabled:cursor-not-allowed\">Compare 0 Models</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    39 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not enabled\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n",
+                        "stack": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Compare\")')\u001b[22m\n\u001b[2m    - locator resolved to <button disabled type=\"submit\" class=\"bg-[hsl(280,100%,70%)] text-white font-bold py-2 px-6 rounded-lg hover:bg-[hsl(280,100%,60%)] disabled:bg-gray-600 disabled:cursor-not-allowed\">Compare 0 Models</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    39 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not enabled\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\n    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts:58:16",
+                        "location": {
+                          "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts",
+                          "column": 16,
+                          "line": 58
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 56 |\u001b[39m\n \u001b[90m 57 |\u001b[39m     \u001b[90m// Try to submit (this might fail due to fake keys)\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 58 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'button:has-text(\"Compare\")'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 59 |\u001b[39m\n \u001b[90m 60 |\u001b[39m     \u001b[90m// Wait a bit to see what happens\u001b[39m\n \u001b[90m 61 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m3000\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
-                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
-                        },
-                        {
                           "location": {
-                            "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
+                            "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts",
                             "column": 16,
-                            "line": 49
+                            "line": 58
                           },
-                          "message": "Error: page.click: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Configure Providers (0/4)')\u001b[22m\n\n\n\u001b[0m \u001b[90m 47 |\u001b[39m     \n \u001b[90m 48 |\u001b[39m     \u001b[90m// Click provider configuration\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 49 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'text=Configure Providers (0/4)'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 50 |\u001b[39m     \n \u001b[90m 51 |\u001b[39m     \u001b[90m// Modal should open\u001b[39m\n \u001b[90m 52 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=AI Provider Configuration'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:49:16\u001b[22m"
+                          "message": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Compare\")')\u001b[22m\n\u001b[2m    - locator resolved to <button disabled type=\"submit\" class=\"bg-[hsl(280,100%,70%)] text-white font-bold py-2 px-6 rounded-lg hover:bg-[hsl(280,100%,60%)] disabled:bg-gray-600 disabled:cursor-not-allowed\">Compare 0 Models</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    39 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not enabled\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\n\n\u001b[0m \u001b[90m 56 |\u001b[39m\n \u001b[90m 57 |\u001b[39m     \u001b[90m// Try to submit (this might fail due to fake keys)\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 58 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'button:has-text(\"Compare\")'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 59 |\u001b[39m\n \u001b[90m 60 |\u001b[39m     \u001b[90m// Wait a bit to see what happens\u001b[39m\n \u001b[90m 61 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m3000\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts:58:16\u001b[22m"
                         }
                       ],
-                      "stdout": [],
+                      "stdout": [
+                        {
+                          "text": "Browser console: %c >> mutation #1 %cvalidation.validateApiKey%c %O \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n   \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n  ; font-weight: bold; \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n  ; font-weight: normal; {input: undefined, context: undefined}\n"
+                        },
+                        {
+                          "text": "Browser console: %c >> mutation #2 %cvalidation.validateApiKey%c %O \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n   \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n  ; font-weight: bold; \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n  ; font-weight: normal; {input: undefined, context: undefined}\n"
+                        },
+                        {
+                          "text": "Browser console: %c << mutation #2 %cvalidation.validateApiKey%c %O \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n   \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n  ; font-weight: bold; \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n  ; font-weight: normal; {input: undefined, result: TRPCClientError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleap…, elapsedMs: 655, context: undefined}\n"
+                        },
+                        {
+                          "text": "Browser console: Error validating google API key: TRPCClientError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:countTokens: [400 Bad Request] API key not valid. Please pass a valid API key. [{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API key not valid. Please pass a valid API key.\"}]\n"
+                        },
+                        {
+                          "text": "Browser console: %c << mutation #1 %cvalidation.validateApiKey%c %O \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n   \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n  ; font-weight: bold; \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n  ; font-weight: normal; {input: undefined, result: TRPCClientError: 401 Incorrect API key provided: test-ope***-key. You can find your API key at https…, elapsedMs: 825, context: undefined}\n"
+                        },
+                        {
+                          "text": "Browser console: Error validating openai API key: TRPCClientError: 401 Incorrect API key provided: test-ope***-key. You can find your API key at https://platform.openai.com/account/api-keys.\n"
+                        },
+                        {
+                          "text": "Found 0 checkboxes\n"
+                        }
+                      ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-09-04T21:52:50.668Z",
+                      "startTime": "2025-09-05T09:58:12.252Z",
                       "annotations": [],
                       "attachments": [
                         {
                           "name": "screenshot",
                           "contentType": "image/png",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-handle-provider-configuration-modal-chromium/test-failed-1.png"
+                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/manual-response-debug-Manu-8f7c4-reement-analysis-when-added-webkit/test-failed-1.png"
                         },
                         {
                           "name": "video",
                           "contentType": "video/webm",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-handle-provider-configuration-modal-chromium/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-handle-provider-configuration-modal-chromium/error-context.md"
+                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/manual-response-debug-Manu-8f7c4-reement-analysis-when-added-webkit/video.webm"
                         }
-                      ]
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts",
+                        "column": 16,
+                        "line": 58
+                      }
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "skipped"
                 }
               ],
-              "id": "4219922fea2e2bd3c691-293dcbe70fef52da01f8",
-              "file": "smoke.spec.ts",
-              "line": 44,
+              "id": "75a70cb608a965d39b2f-babf808bd0f28d30bd22",
+              "file": "manual-response-debug.spec.ts",
+              "line": 8,
               "column": 3
             },
             {
-              "title": "should handle model selection modal",
-              "ok": false,
+              "title": "should show manual response in agreement analysis when added",
+              "ok": true,
               "tags": [],
               "tests": [
                 {
                   "timeout": 30000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
                   "results": [
                     {
                       "workerIndex": 3,
                       "parallelIndex": 3,
-                      "status": "timedOut",
-                      "duration": 30853,
+                      "status": "interrupted",
+                      "duration": 24275,
                       "error": {
-                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        "message": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Compare\")')\u001b[22m\n\u001b[2m    - locator resolved to <button disabled type=\"submit\" class=\"bg-[hsl(280,100%,70%)] text-white font-bold py-2 px-6 rounded-lg hover:bg-[hsl(280,100%,60%)] disabled:bg-gray-600 disabled:cursor-not-allowed\">Compare 0 Models</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    41 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not enabled\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+                        "stack": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Compare\")')\u001b[22m\n\u001b[2m    - locator resolved to <button disabled type=\"submit\" class=\"bg-[hsl(280,100%,70%)] text-white font-bold py-2 px-6 rounded-lg hover:bg-[hsl(280,100%,60%)] disabled:bg-gray-600 disabled:cursor-not-allowed\">Compare 0 Models</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    41 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not enabled\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts:58:16",
+                        "location": {
+                          "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts",
+                          "column": 16,
+                          "line": 58
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 56 |\u001b[39m\n \u001b[90m 57 |\u001b[39m     \u001b[90m// Try to submit (this might fail due to fake keys)\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 58 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'button:has-text(\"Compare\")'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 59 |\u001b[39m\n \u001b[90m 60 |\u001b[39m     \u001b[90m// Wait a bit to see what happens\u001b[39m\n \u001b[90m 61 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m3000\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
-                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
-                        },
-                        {
                           "location": {
-                            "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
+                            "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts",
                             "column": 16,
-                            "line": 73
+                            "line": 58
                           },
-                          "message": "Error: page.click: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Select Models (0/8)')\u001b[22m\n\n\n\u001b[0m \u001b[90m 71 |\u001b[39m     \n \u001b[90m 72 |\u001b[39m     \u001b[90m// Click model selection\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 73 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'text=Select Models (0/8)'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 74 |\u001b[39m     \n \u001b[90m 75 |\u001b[39m     \u001b[90m// Modal should open\u001b[39m\n \u001b[90m 76 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Model Selection'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:73:16\u001b[22m"
+                          "message": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Compare\")')\u001b[22m\n\u001b[2m    - locator resolved to <button disabled type=\"submit\" class=\"bg-[hsl(280,100%,70%)] text-white font-bold py-2 px-6 rounded-lg hover:bg-[hsl(280,100%,60%)] disabled:bg-gray-600 disabled:cursor-not-allowed\">Compare 0 Models</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    41 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not enabled\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n\n\u001b[0m \u001b[90m 56 |\u001b[39m\n \u001b[90m 57 |\u001b[39m     \u001b[90m// Try to submit (this might fail due to fake keys)\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 58 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'button:has-text(\"Compare\")'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 59 |\u001b[39m\n \u001b[90m 60 |\u001b[39m     \u001b[90m// Wait a bit to see what happens\u001b[39m\n \u001b[90m 61 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m3000\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts:58:16\u001b[22m"
                         }
                       ],
-                      "stdout": [],
+                      "stdout": [
+                        {
+                          "text": "Browser console: %c >> mutation #1 %cvalidation.validateApiKey%c %O \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n   \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n  ; font-weight: bold; \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n  ; font-weight: normal; {input: Object, context: Object}\n"
+                        },
+                        {
+                          "text": "Browser console: %c >> mutation #2 %cvalidation.validateApiKey%c %O \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n   \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n  ; font-weight: bold; \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n  ; font-weight: normal; {input: Object, context: Object}\n"
+                        },
+                        {
+                          "text": "Browser console: %c << mutation #2 %cvalidation.validateApiKey%c %O \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n   \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n  ; font-weight: bold; \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n  ; font-weight: normal; {input: Object, result: TRPCClientError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googlea…, elapsedMs: 686, context: Object}\n"
+                        },
+                        {
+                          "text": "Browser console: Error validating google API key: TRPCClientError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:countTokens: [400 Bad Request] API key not valid. Please pass a valid API key. [{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API key not valid. Please pass a valid API key.\"}]\n    at TRPCClientError.from (http://localhost:3000/_next/static/chunks/node_modules_f03ea8c3._.js:835:48)\n    at http://localhost:3000/_next/static/chunks/node_modules_f03ea8c3._.js:5952:231\n"
+                        },
+                        {
+                          "text": "Browser console: %c << mutation #1 %cvalidation.validateApiKey%c %O \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n   \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n  ; font-weight: bold; \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n  ; font-weight: normal; {input: Object, result: TRPCClientError: 401 Incorrect API key provided: test-ope***-key. You can find your API key at http…, elapsedMs: 947, context: Object}\n"
+                        },
+                        {
+                          "text": "Browser console: Error validating openai API key: TRPCClientError: 401 Incorrect API key provided: test-ope***-key. You can find your API key at https://platform.openai.com/account/api-keys.\n    at TRPCClientError.from (http://localhost:3000/_next/static/chunks/node_modules_f03ea8c3._.js:835:48)\n    at http://localhost:3000/_next/static/chunks/node_modules_f03ea8c3._.js:5952:231\n"
+                        },
+                        {
+                          "text": "Found 0 checkboxes\n"
+                        },
+                        {
+                          "text": "Browser console: [Fast Refresh] rebuilding\n"
+                        }
+                      ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-09-04T21:52:50.647Z",
+                      "startTime": "2025-09-05T09:58:12.232Z",
                       "annotations": [],
                       "attachments": [
                         {
                           "name": "screenshot",
                           "contentType": "image/png",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-handle-model-selection-modal-chromium/test-failed-1.png"
+                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/manual-response-debug-Manu-8f7c4-reement-analysis-when-added-Mobile-Chrome/test-failed-1.png"
                         },
                         {
                           "name": "video",
                           "contentType": "video/webm",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-handle-model-selection-modal-chromium/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-handle-model-selection-modal-chromium/error-context.md"
+                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/manual-response-debug-Manu-8f7c4-reement-analysis-when-added-Mobile-Chrome/video.webm"
                         }
-                      ]
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts",
+                        "column": 16,
+                        "line": 58
+                      }
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "skipped"
                 }
               ],
-              "id": "4219922fea2e2bd3c691-851f32da2751faa54b64",
-              "file": "smoke.spec.ts",
-              "line": 68,
+              "id": "75a70cb608a965d39b2f-8bd7a18038533a9c8192",
+              "file": "manual-response-debug.spec.ts",
+              "line": 8,
               "column": 3
             },
             {
-              "title": "should load the application without errors",
-              "ok": false,
+              "title": "should show manual response in agreement analysis when added",
+              "ok": true,
               "tags": [],
               "tests": [
                 {
                   "timeout": 30000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
                   "results": [
                     {
                       "workerIndex": 4,
                       "parallelIndex": 4,
-                      "status": "failed",
-                      "duration": 6451,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('text=Configuration')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=Configuration')\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('text=Configuration')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=Configuration')\u001b[22m\n\n    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:18:54",
-                        "location": {
-                          "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                          "column": 54,
-                          "line": 18
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Basic UI elements should be present\u001b[39m\n \u001b[90m 17 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'h1'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Configuration'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'textarea[placeholder*=\"Enter your prompt here\"]'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 20 |\u001b[39m     \n \u001b[90m 21 |\u001b[39m     \u001b[90m// Should not have critical JavaScript errors\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                            "column": 54,
-                            "line": 18
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('text=Configuration')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=Configuration')\u001b[22m\n\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Basic UI elements should be present\u001b[39m\n \u001b[90m 17 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'h1'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Configuration'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'textarea[placeholder*=\"Enter your prompt here\"]'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 20 |\u001b[39m     \n \u001b[90m 21 |\u001b[39m     \u001b[90m// Should not have critical JavaScript errors\u001b[39m\u001b[0m\n\u001b[2m    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:18:54\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-04T21:52:50.652Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-load-the-application-without-errors-firefox/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-load-the-application-without-errors-firefox/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-load-the-application-without-errors-firefox/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                        "column": 54,
-                        "line": 18
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "4219922fea2e2bd3c691-32b0f6f9953402a41073",
-              "file": "smoke.spec.ts",
-              "line": 4,
-              "column": 3
-            },
-            {
-              "title": "should have working navigation and basic interactions",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
-                  "results": [
-                    {
-                      "workerIndex": 5,
-                      "parallelIndex": 1,
-                      "status": "failed",
-                      "duration": 6432,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m()\u001b[22m failed\n\nLocator:  locator('text=Configure Providers (0/4)')\nExpected: enabled\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=Configure Providers (0/4)')\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m()\u001b[22m failed\n\nLocator:  locator('text=Configure Providers (0/4)')\nExpected: enabled\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=Configure Providers (0/4)')\u001b[22m\n\n    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:34:66",
-                        "location": {
-                          "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                          "column": 66,
-                          "line": 34
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 32 |\u001b[39m     \n \u001b[90m 33 |\u001b[39m     \u001b[90m// Test that buttons are clickable\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 34 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Configure Providers (0/4)'\u001b[39m))\u001b[33m.\u001b[39mtoBeEnabled()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 35 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Select Models (0/8)'\u001b[39m))\u001b[33m.\u001b[39mtoBeEnabled()\u001b[33m;\u001b[39m\n \u001b[90m 36 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'button:has-text(\"Compare 0 Models\")'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 37 |\u001b[39m     \u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                            "column": 66,
-                            "line": 34
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m()\u001b[22m failed\n\nLocator:  locator('text=Configure Providers (0/4)')\nExpected: enabled\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=Configure Providers (0/4)')\u001b[22m\n\n\n\u001b[0m \u001b[90m 32 |\u001b[39m     \n \u001b[90m 33 |\u001b[39m     \u001b[90m// Test that buttons are clickable\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 34 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Configure Providers (0/4)'\u001b[39m))\u001b[33m.\u001b[39mtoBeEnabled()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 35 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Select Models (0/8)'\u001b[39m))\u001b[33m.\u001b[39mtoBeEnabled()\u001b[33m;\u001b[39m\n \u001b[90m 36 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'button:has-text(\"Compare 0 Models\")'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 37 |\u001b[39m     \u001b[0m\n\u001b[2m    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:34:66\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-04T21:52:57.233Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-h-5913b-tion-and-basic-interactions-firefox/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-h-5913b-tion-and-basic-interactions-firefox/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-h-5913b-tion-and-basic-interactions-firefox/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                        "column": 66,
-                        "line": 34
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "4219922fea2e2bd3c691-a8a656667ad4aac33062",
-              "file": "smoke.spec.ts",
-              "line": 29,
-              "column": 3
-            },
-            {
-              "title": "should handle provider configuration modal",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
-                  "results": [
-                    {
-                      "workerIndex": 6,
-                      "parallelIndex": 0,
                       "status": "interrupted",
-                      "duration": 30049,
+                      "duration": 24195,
                       "error": {
-                        "message": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('text=Configure Providers (0/4)')\u001b[22m\n",
-                        "stack": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('text=Configure Providers (0/4)')\u001b[22m\n\n    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:49:16",
+                        "message": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Compare\")')\u001b[22m\n\u001b[2m    - locator resolved to <button disabled type=\"submit\" class=\"bg-[hsl(280,100%,70%)] text-white font-bold py-2 px-6 rounded-lg hover:bg-[hsl(280,100%,60%)] disabled:bg-gray-600 disabled:cursor-not-allowed\">Compare 0 Models</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    40 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not enabled\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+                        "stack": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Compare\")')\u001b[22m\n\u001b[2m    - locator resolved to <button disabled type=\"submit\" class=\"bg-[hsl(280,100%,70%)] text-white font-bold py-2 px-6 rounded-lg hover:bg-[hsl(280,100%,60%)] disabled:bg-gray-600 disabled:cursor-not-allowed\">Compare 0 Models</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    40 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not enabled\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts:58:16",
                         "location": {
-                          "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
+                          "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts",
                           "column": 16,
-                          "line": 49
+                          "line": 58
                         },
-                        "snippet": "\u001b[0m \u001b[90m 47 |\u001b[39m     \n \u001b[90m 48 |\u001b[39m     \u001b[90m// Click provider configuration\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 49 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'text=Configure Providers (0/4)'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 50 |\u001b[39m     \n \u001b[90m 51 |\u001b[39m     \u001b[90m// Modal should open\u001b[39m\n \u001b[90m 52 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=AI Provider Configuration'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\u001b[0m"
+                        "snippet": "\u001b[0m \u001b[90m 56 |\u001b[39m\n \u001b[90m 57 |\u001b[39m     \u001b[90m// Try to submit (this might fail due to fake keys)\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 58 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'button:has-text(\"Compare\")'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 59 |\u001b[39m\n \u001b[90m 60 |\u001b[39m     \u001b[90m// Wait a bit to see what happens\u001b[39m\n \u001b[90m 61 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m3000\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
                           "location": {
-                            "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
+                            "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts",
                             "column": 16,
-                            "line": 49
+                            "line": 58
                           },
-                          "message": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('text=Configure Providers (0/4)')\u001b[22m\n\n\n\u001b[0m \u001b[90m 47 |\u001b[39m     \n \u001b[90m 48 |\u001b[39m     \u001b[90m// Click provider configuration\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 49 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'text=Configure Providers (0/4)'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 50 |\u001b[39m     \n \u001b[90m 51 |\u001b[39m     \u001b[90m// Modal should open\u001b[39m\n \u001b[90m 52 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=AI Provider Configuration'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:49:16\u001b[22m"
+                          "message": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Compare\")')\u001b[22m\n\u001b[2m    - locator resolved to <button disabled type=\"submit\" class=\"bg-[hsl(280,100%,70%)] text-white font-bold py-2 px-6 rounded-lg hover:bg-[hsl(280,100%,60%)] disabled:bg-gray-600 disabled:cursor-not-allowed\">Compare 0 Models</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    40 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not enabled\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n\n\u001b[0m \u001b[90m 56 |\u001b[39m\n \u001b[90m 57 |\u001b[39m     \u001b[90m// Try to submit (this might fail due to fake keys)\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 58 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'button:has-text(\"Compare\")'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 59 |\u001b[39m\n \u001b[90m 60 |\u001b[39m     \u001b[90m// Wait a bit to see what happens\u001b[39m\n \u001b[90m 61 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m3000\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts:58:16\u001b[22m"
                         }
                       ],
-                      "stdout": [],
+                      "stdout": [
+                        {
+                          "text": "Browser console: %c >> mutation #1 %cvalidation.validateApiKey%c %O \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n   \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n  ; font-weight: bold; \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n  ; font-weight: normal; {input: undefined, context: undefined}\n"
+                        },
+                        {
+                          "text": "Browser console: %c >> mutation #2 %cvalidation.validateApiKey%c %O \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n   \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n  ; font-weight: bold; \n    background-color: #c5a3fc;\n    color: black;\n    padding: 2px;\n  ; font-weight: normal; {input: undefined, context: undefined}\n"
+                        },
+                        {
+                          "text": "Browser console: %c << mutation #2 %cvalidation.validateApiKey%c %O \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n   \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n  ; font-weight: bold; \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n  ; font-weight: normal; {input: undefined, result: TRPCClientError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleap…, elapsedMs: 839, context: undefined}\n"
+                        },
+                        {
+                          "text": "Browser console: Error validating google API key: TRPCClientError: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:countTokens: [400 Bad Request] API key not valid. Please pass a valid API key. [{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API key not valid. Please pass a valid API key.\"}]\n"
+                        },
+                        {
+                          "text": "Browser console: %c << mutation #1 %cvalidation.validateApiKey%c %O \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n   \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n  ; font-weight: bold; \n    background-color: #904dfc;\n    color: white;\n    padding: 2px;\n  ; font-weight: normal; {input: undefined, result: TRPCClientError: 401 Incorrect API key provided: test-ope***-key. You can find your API key at https…, elapsedMs: 1177, context: undefined}\n"
+                        },
+                        {
+                          "text": "Browser console: Error validating openai API key: TRPCClientError: 401 Incorrect API key provided: test-ope***-key. You can find your API key at https://platform.openai.com/account/api-keys.\n"
+                        },
+                        {
+                          "text": "Found 0 checkboxes\n"
+                        }
+                      ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-09-04T21:52:57.242Z",
+                      "startTime": "2025-09-05T09:58:12.237Z",
                       "annotations": [],
                       "attachments": [
                         {
                           "name": "screenshot",
                           "contentType": "image/png",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-handle-provider-configuration-modal-firefox/test-failed-1.png"
+                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/manual-response-debug-Manu-8f7c4-reement-analysis-when-added-Mobile-Safari/test-failed-1.png"
                         },
                         {
                           "name": "video",
                           "contentType": "video/webm",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-handle-provider-configuration-modal-firefox/video.webm"
+                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/manual-response-debug-Manu-8f7c4-reement-analysis-when-added-Mobile-Safari/video.webm"
                         }
                       ],
                       "errorLocation": {
-                        "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
+                        "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/manual-response-debug.spec.ts",
                         "column": 16,
-                        "line": 49
+                        "line": 58
                       }
                     }
                   ],
                   "status": "skipped"
                 }
               ],
-              "id": "4219922fea2e2bd3c691-b09684d195178362cfe8",
-              "file": "smoke.spec.ts",
-              "line": 44,
-              "column": 3
-            },
-            {
-              "title": "should handle model selection modal",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
-                  "results": [
-                    {
-                      "workerIndex": 7,
-                      "parallelIndex": 4,
-                      "status": "interrupted",
-                      "duration": 28652,
-                      "error": {
-                        "message": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('text=Select Models (0/8)')\u001b[22m\n",
-                        "stack": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('text=Select Models (0/8)')\u001b[22m\n\n    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:73:16",
-                        "location": {
-                          "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                          "column": 16,
-                          "line": 73
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 71 |\u001b[39m     \n \u001b[90m 72 |\u001b[39m     \u001b[90m// Click model selection\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 73 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'text=Select Models (0/8)'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 74 |\u001b[39m     \n \u001b[90m 75 |\u001b[39m     \u001b[90m// Modal should open\u001b[39m\n \u001b[90m 76 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Model Selection'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                            "column": 16,
-                            "line": 73
-                          },
-                          "message": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('text=Select Models (0/8)')\u001b[22m\n\n\n\u001b[0m \u001b[90m 71 |\u001b[39m     \n \u001b[90m 72 |\u001b[39m     \u001b[90m// Click model selection\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 73 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'text=Select Models (0/8)'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 74 |\u001b[39m     \n \u001b[90m 75 |\u001b[39m     \u001b[90m// Modal should open\u001b[39m\n \u001b[90m 76 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Model Selection'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:73:16\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-04T21:52:58.610Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-handle-model-selection-modal-firefox/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-handle-model-selection-modal-firefox/video.webm"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                        "column": 16,
-                        "line": 73
-                      }
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4219922fea2e2bd3c691-169d53fc470c91479f85",
-              "file": "smoke.spec.ts",
-              "line": 68,
-              "column": 3
-            },
-            {
-              "title": "should load the application without errors",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 8,
-                      "parallelIndex": 1,
-                      "status": "failed",
-                      "duration": 6081,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('text=Configuration')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=Configuration')\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('text=Configuration')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=Configuration')\u001b[22m\n\n    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:18:54",
-                        "location": {
-                          "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                          "column": 54,
-                          "line": 18
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Basic UI elements should be present\u001b[39m\n \u001b[90m 17 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'h1'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Configuration'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'textarea[placeholder*=\"Enter your prompt here\"]'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 20 |\u001b[39m     \n \u001b[90m 21 |\u001b[39m     \u001b[90m// Should not have critical JavaScript errors\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                            "column": 54,
-                            "line": 18
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('text=Configuration')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=Configuration')\u001b[22m\n\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Basic UI elements should be present\u001b[39m\n \u001b[90m 17 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'h1'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Configuration'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'textarea[placeholder*=\"Enter your prompt here\"]'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 20 |\u001b[39m     \n \u001b[90m 21 |\u001b[39m     \u001b[90m// Should not have critical JavaScript errors\u001b[39m\u001b[0m\n\u001b[2m    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:18:54\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-04T21:53:05.173Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-load-the-application-without-errors-webkit/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-load-the-application-without-errors-webkit/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-load-the-application-without-errors-webkit/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                        "column": 54,
-                        "line": 18
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "4219922fea2e2bd3c691-356afe4c8c55cdf6a08f",
-              "file": "smoke.spec.ts",
-              "line": 4,
-              "column": 3
-            },
-            {
-              "title": "should have working navigation and basic interactions",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 9,
-                      "parallelIndex": 1,
-                      "status": "failed",
-                      "duration": 5959,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m()\u001b[22m failed\n\nLocator:  locator('text=Configure Providers (0/4)')\nExpected: enabled\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=Configure Providers (0/4)')\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m()\u001b[22m failed\n\nLocator:  locator('text=Configure Providers (0/4)')\nExpected: enabled\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=Configure Providers (0/4)')\u001b[22m\n\n    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:34:66",
-                        "location": {
-                          "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                          "column": 66,
-                          "line": 34
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 32 |\u001b[39m     \n \u001b[90m 33 |\u001b[39m     \u001b[90m// Test that buttons are clickable\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 34 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Configure Providers (0/4)'\u001b[39m))\u001b[33m.\u001b[39mtoBeEnabled()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 35 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Select Models (0/8)'\u001b[39m))\u001b[33m.\u001b[39mtoBeEnabled()\u001b[33m;\u001b[39m\n \u001b[90m 36 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'button:has-text(\"Compare 0 Models\")'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 37 |\u001b[39m     \u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                            "column": 66,
-                            "line": 34
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m()\u001b[22m failed\n\nLocator:  locator('text=Configure Providers (0/4)')\nExpected: enabled\nReceived: <element(s) not found>\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=Configure Providers (0/4)')\u001b[22m\n\n\n\u001b[0m \u001b[90m 32 |\u001b[39m     \n \u001b[90m 33 |\u001b[39m     \u001b[90m// Test that buttons are clickable\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 34 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Configure Providers (0/4)'\u001b[39m))\u001b[33m.\u001b[39mtoBeEnabled()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 35 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Select Models (0/8)'\u001b[39m))\u001b[33m.\u001b[39mtoBeEnabled()\u001b[33m;\u001b[39m\n \u001b[90m 36 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'button:has-text(\"Compare 0 Models\")'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 37 |\u001b[39m     \u001b[0m\n\u001b[2m    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:34:66\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-04T21:53:11.763Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-h-5913b-tion-and-basic-interactions-webkit/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-h-5913b-tion-and-basic-interactions-webkit/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-h-5913b-tion-and-basic-interactions-webkit/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                        "column": 66,
-                        "line": 34
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "4219922fea2e2bd3c691-bd30c5adebcfa2485d1b",
-              "file": "smoke.spec.ts",
-              "line": 29,
-              "column": 3
-            },
-            {
-              "title": "should handle provider configuration modal",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 10,
-                      "parallelIndex": 1,
-                      "status": "interrupted",
-                      "duration": 9246,
-                      "error": {
-                        "message": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('text=Configure Providers (0/4)')\u001b[22m\n",
-                        "stack": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('text=Configure Providers (0/4)')\u001b[22m\n\n    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:49:16",
-                        "location": {
-                          "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                          "column": 16,
-                          "line": 49
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 47 |\u001b[39m     \n \u001b[90m 48 |\u001b[39m     \u001b[90m// Click provider configuration\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 49 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'text=Configure Providers (0/4)'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 50 |\u001b[39m     \n \u001b[90m 51 |\u001b[39m     \u001b[90m// Modal should open\u001b[39m\n \u001b[90m 52 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=AI Provider Configuration'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                            "column": 16,
-                            "line": 49
-                          },
-                          "message": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('text=Configure Providers (0/4)')\u001b[22m\n\n\n\u001b[0m \u001b[90m 47 |\u001b[39m     \n \u001b[90m 48 |\u001b[39m     \u001b[90m// Click provider configuration\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 49 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'text=Configure Providers (0/4)'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 50 |\u001b[39m     \n \u001b[90m 51 |\u001b[39m     \u001b[90m// Modal should open\u001b[39m\n \u001b[90m 52 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=AI Provider Configuration'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:49:16\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-04T21:53:18.275Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-handle-provider-configuration-modal-webkit/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-handle-provider-configuration-modal-webkit/video.webm"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                        "column": 16,
-                        "line": 49
-                      }
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4219922fea2e2bd3c691-197b43a0dfe1e02328b6",
-              "file": "smoke.spec.ts",
-              "line": 44,
-              "column": 3
-            },
-            {
-              "title": "should handle model selection modal",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 11,
-                      "parallelIndex": 3,
-                      "status": "interrupted",
-                      "duration": 5472,
-                      "error": {
-                        "message": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('text=Select Models (0/8)')\u001b[22m\n",
-                        "stack": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('text=Select Models (0/8)')\u001b[22m\n\n    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:73:16",
-                        "location": {
-                          "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                          "column": 16,
-                          "line": 73
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 71 |\u001b[39m     \n \u001b[90m 72 |\u001b[39m     \u001b[90m// Click model selection\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 73 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'text=Select Models (0/8)'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 74 |\u001b[39m     \n \u001b[90m 75 |\u001b[39m     \u001b[90m// Modal should open\u001b[39m\n \u001b[90m 76 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Model Selection'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                            "column": 16,
-                            "line": 73
-                          },
-                          "message": "Error: page.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('text=Select Models (0/8)')\u001b[22m\n\n\n\u001b[0m \u001b[90m 71 |\u001b[39m     \n \u001b[90m 72 |\u001b[39m     \u001b[90m// Click model selection\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 73 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'text=Select Models (0/8)'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 74 |\u001b[39m     \n \u001b[90m 75 |\u001b[39m     \u001b[90m// Modal should open\u001b[39m\n \u001b[90m 76 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Model Selection'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:73:16\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-04T21:53:22.020Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-handle-model-selection-modal-webkit/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-handle-model-selection-modal-webkit/video.webm"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                        "column": 16,
-                        "line": 73
-                      }
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4219922fea2e2bd3c691-f02ecda1a19ea7dcaf1f",
-              "file": "smoke.spec.ts",
-              "line": 68,
-              "column": 3
-            },
-            {
-              "title": "should load the application without errors",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Chrome",
-                  "projectName": "Mobile Chrome",
-                  "results": [
-                    {
-                      "workerIndex": 12,
-                      "parallelIndex": 2,
-                      "status": "interrupted",
-                      "duration": 5735,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('text=Configuration')\nExpected: visible\nReceived: <element(s) not found>\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=Configuration')\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('text=Configuration')\nExpected: visible\nReceived: <element(s) not found>\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=Configuration')\u001b[22m\n\n    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:18:54",
-                        "location": {
-                          "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                          "column": 54,
-                          "line": 18
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Basic UI elements should be present\u001b[39m\n \u001b[90m 17 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'h1'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Configuration'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'textarea[placeholder*=\"Enter your prompt here\"]'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 20 |\u001b[39m     \n \u001b[90m 21 |\u001b[39m     \u001b[90m// Should not have critical JavaScript errors\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                            "column": 54,
-                            "line": 18
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('text=Configuration')\nExpected: visible\nReceived: <element(s) not found>\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=Configuration')\u001b[22m\n\n\n\u001b[0m \u001b[90m 16 |\u001b[39m     \u001b[90m// Basic UI elements should be present\u001b[39m\n \u001b[90m 17 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'h1'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 18 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Configuration'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 19 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'textarea[placeholder*=\"Enter your prompt here\"]'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 20 |\u001b[39m     \n \u001b[90m 21 |\u001b[39m     \u001b[90m// Should not have critical JavaScript errors\u001b[39m\u001b[0m\n\u001b[2m    at /Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts:18:54\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-04T21:53:22.055Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-load-the-application-without-errors-Mobile-Chrome/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/timrichardson/projects/ai-ensemble/test-results/smoke-Smoke-Tests-should-load-the-application-without-errors-Mobile-Chrome/video.webm"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/timrichardson/projects/ai-ensemble/tests/e2e/smoke.spec.ts",
-                        "column": 54,
-                        "line": 18
-                      }
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4219922fea2e2bd3c691-00bd8123ca2ed369d5ee",
-              "file": "smoke.spec.ts",
-              "line": 4,
-              "column": 3
-            },
-            {
-              "title": "should have working navigation and basic interactions",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Chrome",
-                  "projectName": "Mobile Chrome",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4219922fea2e2bd3c691-3af9805c2779feea3527",
-              "file": "smoke.spec.ts",
-              "line": 29,
-              "column": 3
-            },
-            {
-              "title": "should handle provider configuration modal",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Chrome",
-                  "projectName": "Mobile Chrome",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4219922fea2e2bd3c691-4cfac01dd34ada7ecd08",
-              "file": "smoke.spec.ts",
-              "line": 44,
-              "column": 3
-            },
-            {
-              "title": "should handle model selection modal",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Chrome",
-                  "projectName": "Mobile Chrome",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4219922fea2e2bd3c691-e417397a5c832d049128",
-              "file": "smoke.spec.ts",
-              "line": 68,
-              "column": 3
-            },
-            {
-              "title": "should load the application without errors",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Safari",
-                  "projectName": "Mobile Safari",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4219922fea2e2bd3c691-f20b4b7a3ba122d8a1cd",
-              "file": "smoke.spec.ts",
-              "line": 4,
-              "column": 3
-            },
-            {
-              "title": "should have working navigation and basic interactions",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Safari",
-                  "projectName": "Mobile Safari",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4219922fea2e2bd3c691-120dfdb6f532c795e82f",
-              "file": "smoke.spec.ts",
-              "line": 29,
-              "column": 3
-            },
-            {
-              "title": "should handle provider configuration modal",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Safari",
-                  "projectName": "Mobile Safari",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4219922fea2e2bd3c691-94ac9bc76c014e03cfe2",
-              "file": "smoke.spec.ts",
-              "line": 44,
-              "column": 3
-            },
-            {
-              "title": "should handle model selection modal",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Safari",
-                  "projectName": "Mobile Safari",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4219922fea2e2bd3c691-661dcc05329d826f4b0f",
-              "file": "smoke.spec.ts",
-              "line": 68,
+              "id": "75a70cb608a965d39b2f-eb611b48888e58d1fa1e",
+              "file": "manual-response-debug.spec.ts",
+              "line": 8,
               "column": 3
             }
           ]
@@ -1206,11 +623,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-09-04T21:52:50.263Z",
-    "duration": 37817.939,
+    "startTime": "2025-09-05T09:58:11.568Z",
+    "duration": 25558.931,
     "expected": 0,
-    "skipped": 12,
-    "unexpected": 8,
+    "skipped": 5,
+    "unexpected": 0,
     "flaky": 0
   }
 }
