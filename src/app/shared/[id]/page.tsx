@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
-import { getSharedResponse } from '~/server/services/storage';
-import { SharedResponseViewer } from '~/app/_components/SharedResponseViewer';
+import { getSharedResponse } from '@/server/services/storage';
+import { SharedResponseViewer } from '@/app/_components/SharedResponseViewer';
 
 interface SharedPageProps {
   params: Promise<{

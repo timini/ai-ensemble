@@ -1,12 +1,17 @@
+import { env } from "@/env";
 import OpenAI from "openai";
 import type { IAIProvider } from "./IAIProvider";
 
 export class GrokProvider implements IAIProvider {
   private readonly client: OpenAI;
 
-  constructor(apiKey: string) {
+  constructor(apiKey?: string) {
+    const key = apiKey ?? env.GROK_API_KEY;
+    if (!key) {
+      throw new Error("Grok API key is not provided or configured in environment variables.");
+    }
     this.client = new OpenAI({
-      apiKey,
+      apiKey: key,
       baseURL: "https://api.x.ai/v1/",
     });
   }

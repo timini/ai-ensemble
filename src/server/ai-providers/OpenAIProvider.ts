@@ -1,12 +1,16 @@
- 
+import { env } from "@/env";
 import OpenAI from "openai";
 import type { IAIProvider } from "./IAIProvider";
 
 export class OpenAIProvider implements IAIProvider {
   private openai: OpenAI;
 
-  constructor(apiKey: string) {
-    this.openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
+  constructor(apiKey?: string) {
+    const key = apiKey ?? env.OPENAI_API_KEY;
+    if (!key) {
+      throw new Error("OpenAI API key is not provided or configured in environment variables.");
+    }
+    this.openai = new OpenAI({ apiKey: key });
   }
 
   async generateContent(prompt: string, model = "gpt-3.5-turbo"): Promise<string> {

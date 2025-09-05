@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from 'react';
-import type { Provider } from './ProviderSettings';
-import { getProviderColor } from '~/types/modelConfig';
+import type { Provider } from '@/types/api';
+import { getProviderColor } from '@/types/modelConfig';
 
 export interface SelectedModel {
   id: string;
@@ -18,7 +18,7 @@ interface ModelSelectionProps {
   availableModels: Record<Provider, string[]>;
   selectedModels: SelectedModel[];
   onSelectedModelsChange: (models: SelectedModel[]) => void;
-  providerStatus: Record<Provider, 'valid' | 'invalid' | 'unchecked'>;
+  providerStatus: Record<Provider, 'valid' | 'invalid' | 'unchecked' | 'validating'>;
 }
 
 export function ModelSelection({

@@ -1,6 +1,6 @@
-import { ensembleRouter } from "~/server/api/routers/ensemble";
-import { validationRouter } from "~/server/api/routers/validation";
-import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
+import { ensembleRouter } from "@/server/api/routers/ensemble";
+import { validationRouter } from "@/server/api/routers/validation";
+import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 
 /**
  * This is the primary router for your server.

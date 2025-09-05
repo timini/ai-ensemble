@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { calculateAgreement } from './ensemble';
-import { OpenAIProvider } from '~/server/ai-providers/OpenAIProvider';
+import { OpenAIProvider } from '@/server/ai-providers/OpenAIProvider';
 
 describe('Ensemble Router Helpers', () => {
 

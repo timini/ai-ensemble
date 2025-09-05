@@ -3,8 +3,8 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CopyButton } from './CopyButton';
-import { type Provider } from './ProviderSettings';
-import type { AgreementScores } from '~/types/agreement';
+import { type Provider } from '@/types/api';
+import type { AgreementScores } from '@/types/agreement';
 
 interface StreamingResponseProps {
   streamingData: {

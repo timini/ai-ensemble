@@ -15,7 +15,7 @@ test.describe('AI Ensemble Application', () => {
       await expect(page).toHaveTitle(/AI Ensemble/);
       await expect(page.locator('h1')).toContainText('AI');
       await expect(page.locator('h1')).toContainText('Ensemble');
-      await expect(page.locator('text=Comparison. Consensus. Synthesis.')).toBeVisible();
+      await expect(page.locator('text=The smartest AI is an ensemble')).toBeVisible();
     });
 
     test('should display configuration section', async () => {

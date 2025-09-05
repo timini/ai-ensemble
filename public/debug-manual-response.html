@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Manual Response Storage</title>
+</head>
+<body>
+    <h1>Manual Response Debug</h1>
+    <div id="output"></div>
+    
+    <script>
+        // Check what's stored in localStorage for manual responses
+        const manualResponsesJSON = localStorage.getItem('manualResponses');
+        const output = document.getElementById('output');
+        
+        if (manualResponsesJSON) {
+            try {
+                const manualResponses = JSON.parse(manualResponsesJSON);
+                output.innerHTML = '<h2>Manual Responses in localStorage:</h2><pre>' + 
+                    JSON.stringify(manualResponses, null, 2) + '</pre>';
+                
+                // Check each response
+                Object.entries(manualResponses).forEach(([id, response]) => {
+                    const div = document.createElement('div');
+                    div.innerHTML = `
+                        <h3>Response ID: ${id}</h3>
+                        <p><strong>Provider:</strong> ${response.provider}</p>
+                        <p><strong>Model Name:</strong> ${response.modelName}</p>
+                        <p><strong>Response Length:</strong> ${response.response ? response.response.length : 'NULL'}</p>
+                        <p><strong>Response Content:</strong></p>
+                        <div style="border: 1px solid #ccc; padding: 10px; max-height: 200px; overflow-y: auto;">
+                            ${response.response || 'NO CONTENT'}
+                        </div>
+                        <hr>
+                    `;
+                    output.appendChild(div);
+                });
+            } catch (error) {
+                output.innerHTML = '<h2>Error parsing manual responses:</h2><pre>' + error.message + '</pre>';
+            }
+        } else {
+            output.innerHTML = '<h2>No manual responses found in localStorage</h2>';
+        }
+    </script>
+</body>
+</html>

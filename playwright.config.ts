@@ -1,4 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
+import { config } from 'dotenv';
+
+// Load environment variables from .env.test
+config({ path: '.env.test' });
 
 /**
  * @see https://playwright.dev/docs/test-configuration
@@ -15,7 +19,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
-    ['html'],
+    ['html', { open: 'never' }], // Generate HTML report but don't open it
     ['json', { outputFile: 'test-results/results.json' }],
     process.env.CI ? ['github'] : ['list']
   ],
@@ -73,12 +77,14 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: process.env.CI ? undefined : (process.env.PLAYWRIGHT_BASE_URL ? undefined : {
+  webServer: {
     command: 'npm run dev',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000, // 2 minutes
-  }),
+    stdout: 'ignore',
+    stderr: 'pipe',
+  },
 
   /* Global setup and teardown */
   globalSetup: './tests/global-setup.ts',

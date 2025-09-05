@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import cosineSimilarity from "cosine-similarity";
-import { OpenAIProvider } from "~/server/ai-providers/OpenAIProvider";
-import { GoogleProvider } from "~/server/ai-providers/GoogleProvider";
-import { AnthropicProvider } from "~/server/ai-providers/AnthropicProvider";
-import type { AgreementScores } from "~/types/agreement";
+import { OpenAIProvider } from "@/server/ai-providers/OpenAIProvider";
+import { GoogleProvider } from "@/server/ai-providers/GoogleProvider";
+import { AnthropicProvider } from "@/server/ai-providers/AnthropicProvider";
+import type { AgreementScores } from "@/types/agreement";
 
 const ProviderEnum = z.enum(["openai", "google", "anthropic", "grok"]);
 

@@ -3,7 +3,7 @@ import { vi } from 'vitest';
 import { ImprovedEnsembleInterface } from './ImprovedEnsembleInterface';
 
 // Mock the tRPC hooks
-vi.mock('~/trpc/react', () => ({
+vi.mock('@/trpc/react', () => ({
   api: {
     ensemble: {
       stream: {
@@ -24,16 +24,52 @@ vi.mock('~/trpc/react', () => ({
         }),
       },
       validateApiKey: {
-        useMutation: () => ({
-          mutate: vi.fn(),
-          isPending: false,
-        }),
+        useMutation: () => {
+          const mockMutate = vi.fn();
+          const mockMutateAsync = vi.fn();
+
+          // Add validation to ensure correct parameter schema
+          mockMutateAsync.mockImplementation((params: any) => {
+            // This will catch the regression if wrong parameter names are used
+            if ('apiKey' in params && !('key' in params)) {
+              return Promise.reject(new Error('TRPC validation error: key is required'));
+            }
+            if (!params.provider || !params.key) {
+              return Promise.reject(new Error('TRPC validation error: provider and key are required'));
+            }
+            return Promise.resolve({ success: true, error: null });
+          });
+
+          return {
+            mutate: mockMutate,
+            mutateAsync: mockMutateAsync,
+            isPending: false,
+          };
+        },
       },
       getModels: {
-        useMutation: () => ({
-          mutate: vi.fn(),
-          isPending: false,
-        }),
+        useMutation: () => {
+          const mockMutate = vi.fn();
+          const mockMutateAsync = vi.fn();
+
+          // Add validation to ensure correct parameter schema
+          mockMutateAsync.mockImplementation((params: any) => {
+            // This will catch the regression if wrong parameter names are used
+            if ('apiKey' in params && !('key' in params)) {
+              return Promise.reject(new Error('TRPC validation error: key is required'));
+            }
+            if (!params.provider || !params.key) {
+              return Promise.reject(new Error('TRPC validation error: provider and key are required'));
+            }
+            return Promise.resolve({ success: true, models: ['gpt-4', 'gpt-3.5-turbo'] });
+          });
+
+          return {
+            mutate: mockMutate,
+            mutateAsync: mockMutateAsync,
+            isPending: false,
+          };
+        },
       },
     },
   },

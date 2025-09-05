@@ -1,4 +1,4 @@
-import { type Provider } from "~/app/_components/ProviderSettings";
+import { type Provider } from "@/types/api";
 
 // Only text generation models - excluding image, embedding, or other non-text models
 export const FALLBACK_MODELS: Record<Provider, string[]> = {

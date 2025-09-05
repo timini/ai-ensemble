@@ -1,14 +1,19 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { api } from '~/trpc/react';
-import { type Provider, type KeyStatus } from '../_components/ProviderSettings';
-import { FALLBACK_MODELS } from '~/utils/constants';
-import type { AgreementScores } from '~/types/agreement';
+import { api } from '@/trpc/react';
+import { type Provider, type KeyStatus } from '@/types/api';
+import { FALLBACK_MODELS } from '@/utils/constants';
+import type { AgreementScores } from '@/types/agreement';
 
 export function useEnsembleState() {
   console.log("useEnsembleState: Render");
   const [prompt, setPrompt] = useState("");
   const [keys, setKeys] = useState<Record<Provider, string>>({ openai: "", google: "", anthropic: "", grok: "" });
-  const [models, setModels] = useState<Record<Provider, string>>({ openai: FALLBACK_MODELS.openai[0]!, google: FALLBACK_MODELS.google[0]!, anthropic: FALLBACK_MODELS.anthropic[0]!, grok: FALLBACK_MODELS.grok[0]! });
+  const [models, setModels] = useState<Record<Provider, string>>({
+    openai: (FALLBACK_MODELS.openai && FALLBACK_MODELS.openai[0]) || "gpt-4-turbo",
+    google: (FALLBACK_MODELS.google && FALLBACK_MODELS.google[0]) || "gemini-2.5-flash",
+    anthropic: (FALLBACK_MODELS.anthropic && FALLBACK_MODELS.anthropic[0]) || "claude-3-opus-20240229",
+    grok: (FALLBACK_MODELS.grok && FALLBACK_MODELS.grok[0]) || "grok-2-latest",
+  });
   const [keyStatus, setKeyStatus] = useState<Record<Provider, KeyStatus>>({ openai: "unchecked", google: "unchecked", anthropic: "unchecked", grok: "unchecked" });
   const [validationInProgress, setValidationInProgress] = useState<Set<Provider>>(new Set());
   const [modelsLoading, setModelsLoading] = useState<Set<Provider>>(new Set());

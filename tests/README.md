@@ -30,6 +30,30 @@ GROK_API_KEY=xai-your-actual-grok-key
 
 ### 3. Run Tests
 
+#### Quick Commands
+```bash
+# Run all E2E tests (no HTML report server)
+npx playwright test
+
+# Run smoke tests only
+npx playwright test tests/e2e/smoke.spec.ts
+
+# Run specific test file
+npx playwright test tests/e2e/manual-response-consensus.spec.ts
+
+# Run tests in headed mode (see browser)
+npx playwright test --headed
+
+# Run tests with debug mode
+npx playwright test --debug
+
+# Run tests for specific browser only
+npx playwright test --project=chromium
+
+# Run tests and generate HTML report (without auto-opening)
+npx playwright test --reporter=html
+```
+
 #### Local Development (against dev server)
 ```bash
 # Run all E2E tests
@@ -48,8 +72,39 @@ npm run test:e2e:headed
 #### Against Deployed Application
 ```bash
 # Set the base URL to your deployed app
-PLAYWRIGHT_BASE_URL=https://your-app.web.app npm run test:e2e
+PLAYWRIGHT_BASE_URL=https://your-app.web.app npx playwright test
 ```
+
+#### Running Tests in Cursor IDE
+
+**Best Practices for Cursor:**
+
+1. **Quick Test Run**: Use the integrated terminal with `npx playwright test tests/e2e/smoke.spec.ts`
+2. **Debug Mode**: Use `npx playwright test --debug` to step through tests
+3. **Specific Browser**: Use `npx playwright test --project=chromium` for faster feedback
+4. **Headed Mode**: Use `npx playwright test --headed` to see what's happening visually
+5. **Single Test**: Use `npx playwright test --grep "test name"` to run specific tests
+
+**Recommended Workflow:**
+```bash
+# 1. Start with smoke tests to verify basic functionality
+npx playwright test tests/e2e/smoke.spec.ts
+
+# 2. Run specific feature tests
+npx playwright test tests/e2e/manual-response-consensus.spec.ts
+
+# 3. Debug failing tests with headed mode
+npx playwright test tests/e2e/manual-response-consensus.spec.ts --headed --project=chromium
+
+# 4. Run all tests when ready
+npx playwright test
+```
+
+**Cursor-Specific Tips:**
+- Use `Ctrl+`` to open integrated terminal
+- Use `Cmd+Shift+P` → "Terminal: Run Active File" to run tests from test files
+- Use the Playwright extension for better test debugging
+- Set breakpoints in test files for debugging
 
 ## Test Structure
 
@@ -105,6 +160,13 @@ The following secrets must be configured in GitHub:
 - Loads environment variables from `.env.playwright`
 - Validates required API keys are present
 - Tests application accessibility before running tests
+
+### Policy: Do not stub or mock network in E2E tests
+
+- E2E tests must exercise the real app and backend behavior. Do not intercept `fetch`, stub SSE streams, override tRPC validations, or short-circuit network requests in Playwright.
+- Provide real/sandbox API keys via `.env.playwright` (see `playwright.env.example`). Tests should configure providers through the UI using these keys.
+- If setup is repetitive, prefer reusable helper flows or fixtures that drive the UI, not network stubs.
+- If an element intercepts clicks (e.g., hidden overlay), fix the UI (z-index/focus/aria/selector) rather than adding brittle waits or mocks.
 
 ## Writing New Tests
 

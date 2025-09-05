@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import { ShareButton } from './ShareButton';
-import type { ShareRequest } from '~/types/share';
+import type { ShareRequest } from '@/types/share';
 
 // Mock fetch
 global.fetch = vi.fn();

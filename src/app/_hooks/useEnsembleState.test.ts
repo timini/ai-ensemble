@@ -2,9 +2,9 @@ import { renderHook, act } from '@testing-library/react';
 import { useEnsembleState } from './useEnsembleState';
 import { vi } from 'vitest';
 import 'vitest-localstorage-mock';
-import { api } from '~/trpc/react';
+import { api } from '@/trpc/react';
 
-vi.mock('~/trpc/react', () => ({
+vi.mock('@/trpc/react', () => ({
   api: {
     validation: {
       validateAllKeys: {

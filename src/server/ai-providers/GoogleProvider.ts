@@ -1,12 +1,16 @@
- 
+import { env } from "@/env";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { IAIProvider } from "./IAIProvider";
 
 export class GoogleProvider implements IAIProvider {
   private genAI: GoogleGenerativeAI;
 
-  constructor(apiKey: string) {
-    this.genAI = new GoogleGenerativeAI(apiKey);
+  constructor(apiKey?: string) {
+    const key = apiKey ?? env.GOOGLE_API_KEY;
+    if (!key) {
+      throw new Error("Google API key is not provided or configured in environment variables.");
+    }
+    this.genAI = new GoogleGenerativeAI(key);
   }
 
   async generateContent(prompt: string, modelName = "gemini-1.5-flash"): Promise<string> {

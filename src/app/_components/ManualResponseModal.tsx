@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import type { Provider } from './ProviderSettings';
+import type { Provider } from '@/types/api';
 
 interface ManualResponseModalProps {
   isOpen: boolean;

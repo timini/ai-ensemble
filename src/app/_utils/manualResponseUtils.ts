@@ -1,4 +1,4 @@
-import type { Provider } from '../_components/ProviderSettings';
+import type { Provider } from '@/types/api';
 import type { SelectedModel } from '../_components/ModelSelection';
 
 export interface ManualResponse {

@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from 'react';
-import type { Provider } from './ProviderSettings';
+import type { Provider } from '@/types/api';
 
 interface ProviderManagerProps {
   enabledProviders: Provider[];
-  onProvidersChange: (providers: Provider[]) => void;
+  onToggleProvider: (provider: Provider) => void;
 }
 
 const ALL_PROVIDERS: { key: Provider; name: string; description: string; color: string }[] = [
@@ -35,18 +35,18 @@ const ALL_PROVIDERS: { key: Provider; name: string; description: string; color: 
   },
 ];
 
-export function ProviderManager({ enabledProviders, onProvidersChange }: ProviderManagerProps) {
+export function ProviderManager({ enabledProviders, onToggleProvider }: ProviderManagerProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleProvider = (provider: Provider) => {
     if (enabledProviders.includes(provider)) {
       // Remove provider (but ensure at least one remains)
       if (enabledProviders.length > 1) {
-        onProvidersChange(enabledProviders.filter(p => p !== provider));
+        onToggleProvider(provider);
       }
     } else {
       // Add provider
-      onProvidersChange([...enabledProviders, provider]);
+      onToggleProvider(provider);
     }
   };
 

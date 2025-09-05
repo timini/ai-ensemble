@@ -1,12 +1,16 @@
- 
+import { env } from "@/env";
 import Anthropic from "@anthropic-ai/sdk";
 import type { IAIProvider } from "./IAIProvider";
 
 export class AnthropicProvider implements IAIProvider {
   private anthropic: Anthropic;
 
-  constructor(apiKey: string) {
-    this.anthropic = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
+  constructor(apiKey?: string) {
+    const key = apiKey ?? env.ANTHROPIC_API_KEY;
+    if (!key) {
+      throw new Error("Anthropic API key is not provided or configured in environment variables.");
+    }
+    this.anthropic = new Anthropic({ apiKey: key });
   }
 
   async generateContent(prompt: string, model = "claude-3-haiku-20240307"): Promise<string> {

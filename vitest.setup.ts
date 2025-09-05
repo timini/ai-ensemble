@@ -16,3 +16,17 @@ vi.mock('~/env', async () => {
     },
   };
 });
+
+vi.mock('react-use-sse', () => ({
+  useSSE: vi.fn(() => ({
+    lastMessage: null,
+    readyState: 0,
+    sendMessage: vi.fn(),
+    getEventSource: vi.fn(),
+  })),
+  ReadyState: {
+    CONNECTING: 0,
+    OPEN: 1,
+    CLOSED: 2,
+  },
+}));

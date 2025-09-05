@@ -1,7 +1,6 @@
 "use client";
 
-export type Provider = "openai" | "google" | "anthropic" | "grok";
-export type KeyStatus = "valid" | "invalid" | "unchecked";
+import { type Provider, type KeyStatus } from "@/types/api";
 
 export function ProviderSettings({ provider, title, models, onKeyChange, onModelChange, onValidate, isValidationInProgress, isModelsLoading, keyStatus, currentKey, currentModel, isKeyVisible, toggleKeyVisibility }: { provider: Provider; title: string; models: readonly string[]; onKeyChange: (p: Provider, v: string) => void; onModelChange: (p: Provider, v: string) => void; onValidate: (p: Provider) => void; isValidationInProgress: boolean; isModelsLoading: boolean; keyStatus: KeyStatus; currentKey: string; currentModel: string; isKeyVisible: boolean; toggleKeyVisibility: () => void; }) {
   return (

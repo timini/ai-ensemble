@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import { validationRouter } from './validation';
 import { TRPCError } from '@trpc/server';
-import { createCallerFactory, createTRPCContext } from '~/server/api/trpc';
+import { createCallerFactory, createTRPCContext } from '@/server/api/trpc';
 
 const createCaller = createCallerFactory(validationRouter);
 const mockContext = await createTRPCContext({ headers: new Headers() });

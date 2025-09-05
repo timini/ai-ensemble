@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { ModelConfiguration } from '~/types/modelConfig';
-import { createDefaultConfigurations } from '~/types/modelConfig';
-import { api } from '~/trpc/react';
-import type { Provider } from '~/app/_components/ProviderSettings';
-import { FALLBACK_MODELS } from '~/utils/constants';
+import type { ModelConfiguration } from '@/types/modelConfig';
+import { createDefaultConfigurations } from '@/types/modelConfig';
+import { api } from '@/trpc/react';
+import type { Provider } from '@/types/api';
+import { FALLBACK_MODELS } from '@/utils/constants';
 
 const STORAGE_KEY = 'ai-ensemble-model-configurations';
 

@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from 'react';
-import type { Provider } from './ProviderSettings';
+import type { Provider } from '@/types/api';
 import type { SelectedModel } from './ModelSelection';
-import { getProviderColor } from '~/types/modelConfig';
+import { getProviderColor } from '@/types/modelConfig';
 
 interface AddModelModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddModel: (model: SelectedModel) => void;
   availableModels: Record<Provider, string[]>;
-  providerStatus: Record<Provider, 'valid' | 'invalid' | 'unchecked'>;
+  providerStatus: Record<Provider, 'valid' | 'invalid' | 'unchecked' | 'validating'>;
 }
 
 export function AddModelModal({ 

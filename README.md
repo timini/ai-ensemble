@@ -58,3 +58,34 @@ pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Testing
+
+### Unit Tests
+```bash
+# Run unit tests
+npm test
+
+# Run unit tests in watch mode
+npm run test:watch
+```
+
+### E2E Tests (Playwright)
+```bash
+# Run all E2E tests (no HTML report server)
+npx playwright test
+
+# Run smoke tests only
+npx playwright test tests/e2e/smoke.spec.ts
+
+# Run tests in headed mode (see browser)
+npx playwright test --headed
+
+# Run tests for specific browser only
+npx playwright test --project=chromium
+
+# Debug mode
+npx playwright test --debug
+```
+
+For detailed testing information, see [tests/README.md](tests/README.md).

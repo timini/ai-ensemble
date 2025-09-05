@@ -1,7 +1,7 @@
 "use client";
 
-import { getProviderColor } from "~/types/modelConfig";
-import type { AgreementScore } from "~/types/agreement";
+import { getProviderColor } from "@/types/modelConfig";
+import type { AgreementScore } from "@/types/agreement";
 import type { SelectedModel } from "./ModelSelection";
 
 interface ConsensusDiagramProps {
@@ -33,8 +33,8 @@ export function ConsensusDiagram({ scores, models }: ConsensusDiagramProps) {
     };
   });
 
-  const positionMap = new Map(modelPositions.map(m => [m.id, { x: m.x, y: m.y }]));
-  const nameMap = new Map(models.map(m => [m.id, m.name]));
+  const positionMap = new Map<string, { x: number; y: number }>(modelPositions.map(m => [m.id, { x: m.x, y: m.y }]));
+  const nameMap = new Map<string, string>(models.map(m => [m.id, m.name]));
 
   const getScoreColor = (score: number) => {
     const percentage = score * 100;
@@ -54,8 +54,8 @@ export function ConsensusDiagram({ scores, models }: ConsensusDiagramProps) {
             const pos2 = positionMap.get(id2);
             if (!pos1 || !pos2) return null;
 
-            const opacity = Math.max(0.1, score);
-            const strokeWidth = 1 + score * 3;
+            const opacity = Math.max(0.3, score);
+            const strokeWidth = Math.max(2, 1 + score * 4); // Minimum 2px, max 5px
             const lineLabel = String.fromCharCode(65 + index); // A, B, C...
 
             return (
@@ -111,9 +111,9 @@ export function ConsensusDiagram({ scores, models }: ConsensusDiagramProps) {
           <div key={`${id1}-${id2}`} data-testid="agreement-score">
             <span className="font-bold text-gray-100">{String.fromCharCode(65 + index)}:</span>
             {' '}
-            <span className="font-semibold text-gray-300">{nameMap.get(id1)?.split(' ').pop()}</span>
+            <span className="font-semibold text-gray-300">{nameMap.get(id1)?.split(' ').pop() ?? 'Unknown'}</span>
             {' <> '}
-            <span className="font-semibold text-gray-300">{nameMap.get(id2)?.split(' ').pop()}</span>
+            <span className="font-semibold text-gray-300">{nameMap.get(id2)?.split(' ').pop() ?? 'Unknown'}</span>
             {': '}
             <span className={`${getScoreColor(score)} font-semibold`}>{(score * 100).toFixed(0)}%</span>
           </div>

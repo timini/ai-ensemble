@@ -5,10 +5,10 @@ import { useModelConfigurations } from '../_hooks/useModelConfigurations';
 import { ModelConfigurationManager } from './ModelConfigurationManager';
 import { PromptInput } from './PromptInput';
 import { Header } from './Header';
-// import type { ModelConfiguration } from '~/types/modelConfig';
-import { getProviderColor } from '~/types/modelConfig';
+// import type { ModelConfiguration } from '@/types/modelConfig';
+import { getProviderColor } from '@/types/modelConfig';
 import { ConsensusDiagram } from './ConsensusDiagram';
-import type { AgreementScore } from '~/types/agreement';
+import type { AgreementScore } from '@/types/agreement';
 
 interface StreamingData {
   configResponses: Record<string, string>;

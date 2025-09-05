@@ -3,7 +3,7 @@ import Home from './page';
 import { vi } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { httpBatchLink } from '@trpc/client';
-import { api } from '~/trpc/react';
+import { api } from '@/trpc/react';
 
 // Create a test query client
 const createTestQueryClient = () => new QueryClient({

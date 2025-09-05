@@ -1,6 +1,6 @@
 "use client";
 
-import { type Provider } from './ProviderSettings';
+import { type Provider } from '@/types/api';
 
 interface SummarizerSelectionProps {
   summarizerSelection: string;

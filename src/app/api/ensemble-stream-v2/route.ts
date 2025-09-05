@@ -1,13 +1,13 @@
 import { z } from "zod";
 import type { NextRequest } from "next/server";
-import { OpenAIProvider } from "~/server/ai-providers/OpenAIProvider";
-import { GoogleProvider } from "~/server/ai-providers/GoogleProvider";
-import { AnthropicProvider } from "~/server/ai-providers/AnthropicProvider";
-import { GrokProvider } from "~/server/ai-providers/GrokProvider";
-import type { IAIProvider } from "~/server/ai-providers/IAIProvider";
-import type { Provider } from "~/app/_components/ProviderSettings";
-import { calculateAgreement } from "~/server/api/routers/ensemble";
-import { type AgreementScores } from "~/types/agreement";
+import { OpenAIProvider } from "@/server/ai-providers/OpenAIProvider";
+import { GoogleProvider } from "@/server/ai-providers/GoogleProvider";
+import { AnthropicProvider } from "@/server/ai-providers/AnthropicProvider";
+import { GrokProvider } from "@/server/ai-providers/GrokProvider";
+import type { IAIProvider } from "@/server/ai-providers/IAIProvider";
+import type { Provider } from "@/types/api";
+import { calculateAgreement } from "@/server/api/routers/ensemble";
+import { type AgreementScores } from "@/types/agreement";
 
 
 
@@ -23,7 +23,7 @@ const ModelConfigurationSchema = z.object({
 const StreamRequestSchemaV2 = z.object({
   prompt: z.string().min(1, "Prompt is required"),
   configurations: z.array(ModelConfigurationSchema).min(2, "At least 2 model configurations required").max(8, "Maximum 8 model configurations allowed"),
-  keys: z.record(z.string()), // configId -> apiKey
+  keys: z.record(z.string()).optional(), // configId -> apiKey. Optional to allow for server-side keys.
   models: z.record(z.string()), // configId -> modelName  
   summarizer: z.object({
     configId: z.string(),
@@ -32,15 +32,15 @@ const StreamRequestSchemaV2 = z.object({
   }),
   existingResponses: z.record(z.string()).optional(), // configId -> response
 }).refine((data) => {
-  // Ensure all configurations have corresponding keys and models
+  // Ensure all configurations have corresponding models
   return data.configurations.every(config => 
-    data.keys[config.id] && data.models[config.id]
+    data.models[config.id]
   );
 }, {
-  message: "All configurations must have corresponding API keys and models",
+  message: "All configurations must have corresponding models",
 });
 
-function createProviderInstance(provider: Provider, apiKey: string): IAIProvider {
+function createProviderInstance(provider: Provider, apiKey?: string): IAIProvider {
   switch (provider) {
     case 'openai':
       return new OpenAIProvider(apiKey);
@@ -76,10 +76,7 @@ export async function POST(req: NextRequest) {
           // Create provider instances with their respective API keys
           for (const config of input.configurations) {
             try {
-              const apiKey = input.keys[config.id];
-              if (!apiKey) {
-                throw new Error(`API key missing for configuration ${config.id}`);
-              }
+              const apiKey = input.keys?.[config.id];
               console.log(`Creating provider instance for ${config.id} (${config.provider})`);
               providerInstances[config.id] = createProviderInstance(config.provider, apiKey);
               configResponses[config.id] = '';
@@ -96,9 +93,15 @@ export async function POST(req: NextRequest) {
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type, ...data })}\n\n`));
           };
 
+          // Count total models including manual responses
+          const totalModels = input.configurations.length + 
+            (input.existingResponses ? Object.keys(input.existingResponses).filter(id => 
+              !input.configurations.some(config => config.id === id)
+            ).length : 0);
+
           // Send initial status
           sendData('status', { 
-            message: `Starting parallel AI queries with ${input.configurations.length} models...`,
+            message: `Starting parallel AI queries with ${totalModels} models...`,
             configurations: input.configurations.map(c => ({ id: c.id, name: c.name, provider: c.provider }))
           });
 
@@ -108,6 +111,16 @@ export async function POST(req: NextRequest) {
             if (input.existingResponses?.[config.id]) {
               return (async () => {
                 configResponses[config.id] = input.existingResponses![config.id]!;
+                console.log(
+                  JSON.stringify({
+                    level: 'info',
+                    event: 'manual_short_circuit',
+                    configId: config.id,
+                    provider: config.provider,
+                    model: config.model,
+                    message: `short-circuited manual configId=${config.id}, provider=${config.provider}, model=${config.model}`,
+                  })
+                );
                 sendData('config_start', { configId: config.id, name: config.name });
                 sendData('config_complete', { 
                   configId: config.id, 
@@ -153,6 +166,38 @@ export async function POST(req: NextRequest) {
             })();
           });
 
+          // Process manual responses that are in existingResponses but not in configurations
+          if (input.existingResponses) {
+            const manualResponsePromises = Object.entries(input.existingResponses)
+              .filter(([id, response]) => {
+                // Only process responses that are NOT in configurations (i.e., manual responses)
+                return !input.configurations.some(config => config.id === id) && response;
+              })
+              .map(([id, response]) => {
+                return (async () => {
+                  configResponses[id] = response;
+                  // For manual responses, we need to determine the name from the response content or use a default
+                  const name = `Manual Response ${id}`;
+                  console.log(
+                    JSON.stringify({
+                      level: 'info',
+                      event: 'manual_only_response',
+                      configId: id,
+                      message: `processed manual-only response configId=${id}`,
+                    })
+                  );
+                  sendData('config_start', { configId: id, name });
+                  sendData('config_complete', { 
+                    configId: id, 
+                    name,
+                    response: configResponses[id] 
+                  });
+                })();
+              });
+            
+            streamPromises.push(...manualResponsePromises);
+          }
+
           // Wait for all streams to complete
           await Promise.all(streamPromises);
 
@@ -184,7 +229,7 @@ export async function POST(req: NextRequest) {
               }
             } else {
               console.warn("Agreement calculation skipped: No OpenAI provider available for embeddings.");
-              sendData('agreement_error', { error: 'No OpenAI provider available for embeddings' });
+              sendData('agreement_error', { error: 'Agreement analysis unavailable: No OpenAI provider available for embeddings. Add at least one OpenAI configuration with a valid API key.' });
             }
           }
           sendData('agreement', { scores: agreementScores });
@@ -193,15 +238,14 @@ export async function POST(req: NextRequest) {
           // Generate consensus response
           sendData('status', { message: 'Generating consensus response...' });
           
-          // Build summarizer prompt with all successful responses
-          const validResponses = input.configurations
-            .filter(config => {
-              const response = configResponses[config.id];
-              return response && 
-                     response.trim().length > 0 && 
-                     !response.startsWith('Error:');
-            })
-            .map(config => `${config.name} (${config.provider}):\n${configResponses[config.id]}`);
+          // Build summarizer prompt with all successful responses, including manual-only ones
+          const validResponses = Object.entries(configResponses)
+            .filter(([, response]) => response && response.trim().length > 0 && !response.startsWith('Error:'))
+            .map(([id, response]) => {
+              const config = input.configurations.find(c => c.id === id);
+              const name = config ? `${config.name} (${config.provider})` : `Manual Response ${id}`;
+              return `${name}:\n${response}`;
+            });
 
           const summarizerPrompt = validResponses.length > 1
             ? `Different AI models provided the following responses:\n\n${validResponses.join('\n\n---\n\n')}\n\n---\n\nPlease provide a well-structured consensus response that synthesizes the best insights from all responses. Focus on accuracy, completeness, and clarity.`

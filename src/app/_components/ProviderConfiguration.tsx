@@ -1,17 +1,23 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { Provider } from './ProviderSettings';
-import { getProviderColor } from '~/types/modelConfig';
-import { api } from '~/trpc/react';
+import { getProviderColor } from '@/types/modelConfig';
+import { api } from '@/trpc/react';
+import { 
+  type Provider, 
+  type KeyStatus,
+  type ApiKeyValidationResponse,
+  type ModelListResponse,
+} from '@/types/api';
 
 interface ProviderConfigurationProps {
   providerKeys: Record<Provider, string>;
   onProviderKeysChange: (keys: Record<Provider, string>) => void;
-  providerStatus: Record<Provider, 'valid' | 'invalid' | 'unchecked'>;
-  onProviderStatusChange: (status: Record<Provider, 'valid' | 'invalid' | 'unchecked'>) => void;
+  providerStatus: Record<Provider, 'valid' | 'invalid' | 'unchecked' | 'validating'>;
+  onProviderStatusChange: (updater: Record<Provider, 'valid' | 'invalid' | 'unchecked' | 'validating'> | ((prev: Record<Provider, 'valid' | 'invalid' | 'unchecked' | 'validating'>) => Record<Provider, 'valid' | 'invalid' | 'unchecked' | 'validating'>)) => void;
   availableModels: Record<Provider, string[]>;
   onAvailableModelsChange: (models: Record<Provider, string[]>) => void;
+  triggerInitialValidation: boolean; // New prop
 }
 
 const PROVIDER_INFO = {
@@ -37,90 +43,69 @@ const PROVIDER_INFO = {
   },
 } as const;
 
-export function ProviderConfiguration({ 
-  providerKeys, 
-  onProviderKeysChange, 
+export function ProviderConfiguration({
+  providerKeys,
+  onProviderKeysChange,
   providerStatus,
   onProviderStatusChange,
   availableModels,
-  onAvailableModelsChange
+  onAvailableModelsChange,
+  triggerInitialValidation // Destructure new prop
 }: ProviderConfigurationProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [visibleKeys, setVisibleKeys] = useState<Set<Provider>>(new Set());
   const [validatingKeys, setValidatingKeys] = useState<Set<Provider>>(new Set());
+  const initialValidationDone = useRef(false); // New ref to prevent re-running initial validation
 
   // tRPC mutations for validation
   const validateApiKeyMutation = api.validation.validateApiKey.useMutation();
   const getModelsMutation = api.validation.getModels.useMutation();
 
-  // Load API keys from localStorage on mount and validate them
+  // Track if we've loaded keys from localStorage to prevent infinite loops
+  const hasLoadedKeys = useRef(false);
+  // Removed: const shouldValidateKeys = useRef(false); // Removed
+
+  // Load API keys from localStorage on mount
   useEffect(() => {
+    if (hasLoadedKeys.current) return;
+    
     const savedKeys: Partial<Record<Provider, string>> = {};
     
     (['openai', 'google', 'anthropic', 'grok'] as Provider[]).forEach(provider => {
       const savedKey = localStorage.getItem(`ai-ensemble-${provider}-key`);
-      if (savedKey) {
-        savedKeys[provider] = savedKey;
-      }
+      if (savedKey) savedKeys[provider] = savedKey;
     });
 
     if (Object.keys(savedKeys).length > 0) {
-      onProviderKeysChange({
-        ...providerKeys,
-        ...savedKeys,
-      });
-
-      // Validate all saved keys on page load in parallel
-      Object.entries(savedKeys).forEach(([provider, key]) => {
-        if (key?.trim()) {
-          // Set immediate feedback that validation is starting
-          setTimeout(() => {
-            setValidatingKeys(prev => new Set([...prev, provider as Provider]));
-          }, 50);
-          
-          // Start validation with delay to let state update
-          setTimeout(() => {
-            validateProviderKey(provider as Provider, key).catch(console.error);
-          }, 100);
-        }
-      });
+      hasLoadedKeys.current = true;
+      onProviderKeysChange({ ...providerKeys, ...savedKeys });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Removed: Validate loaded keys after validateProviderKey is defined // Removed
+  // Removed: useEffect(() => { ... }, [validateProviderKey, providerKeys]); // Removed
 
   // Save API keys to localStorage whenever they change
   useEffect(() => {
     (['openai', 'google', 'anthropic', 'grok'] as Provider[]).forEach(provider => {
       const key = providerKeys[provider];
-      if (key && key.trim().length > 0) {
+      if (key) {
         localStorage.setItem(`ai-ensemble-${provider}-key`, key);
       } else {
         localStorage.removeItem(`ai-ensemble-${provider}-key`);
       }
     });
-  }, [providerKeys]);
+  }, [providerKeys]); // Dependency array to trigger when providerKeys change
 
   // Cleanup timeouts on unmount
   useEffect(() => {
-    const timeouts = validationTimeouts.current;
     return () => {
-      Object.values(timeouts).forEach(timeout => {
+      Object.values(validationTimeouts.current).forEach(timeout => {
         if (timeout) clearTimeout(timeout);
       });
     };
   }, []);
-
-  const toggleKeyVisibility = (provider: Provider) => {
-    setVisibleKeys(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(provider)) {
-        newSet.delete(provider);
-      } else {
-        newSet.add(provider);
-      }
-      return newSet;
-    });
-  };
 
   const validateProviderKey = useCallback(async (provider: Provider, key: string) => {
     if (!key.trim()) {
@@ -129,29 +114,21 @@ export function ProviderConfiguration({
       return;
     }
 
-    setValidatingKeys(prev => new Set([...prev, provider]));
-    
+    onProviderStatusChange({ ...providerStatus, [provider]: 'validating' });
+
     try {
-      // Validate the API key
-      const validationResult = await validateApiKeyMutation.mutateAsync({
-        provider,
-        key,
-      });
+      // Type-safe API calls with proper response types
+      const validationResult: ApiKeyValidationResponse = await validateApiKeyMutation.mutateAsync({ provider, key });
 
       if (validationResult.success) {
-        // Update status to valid
-        onProviderStatusChange({ ...providerStatus, [provider]: 'valid' });
-
-        // Fetch available models
-        try {
-          const modelsResult = await getModelsMutation.mutateAsync({
-            provider,
-            key,
-          }) as string[];
-          
+        const modelsResult: ModelListResponse = await getModelsMutation.mutateAsync({ provider, key });
+        
+        // TypeScript now enforces that modelsResult is string[], not { success, models }
+        if (modelsResult.length > 0) {
+          onProviderStatusChange({ ...providerStatus, [provider]: 'valid' });
           onAvailableModelsChange({ ...availableModels, [provider]: modelsResult });
-        } catch (modelsError) {
-          console.error(`Error fetching models for ${provider}:`, modelsError);
+        } else {
+          onProviderStatusChange({ ...providerStatus, [provider]: 'invalid' });
           onAvailableModelsChange({ ...availableModels, [provider]: [] });
         }
       } else {
@@ -160,7 +137,6 @@ export function ProviderConfiguration({
       }
     } catch (error) {
       console.error(`Error validating ${provider} API key:`, error);
-      
       onProviderStatusChange({ ...providerStatus, [provider]: 'invalid' });
       onAvailableModelsChange({ ...availableModels, [provider]: [] });
     } finally {
@@ -171,6 +147,26 @@ export function ProviderConfiguration({
       });
     }
   }, [validateApiKeyMutation, getModelsMutation, onProviderStatusChange, onAvailableModelsChange, providerStatus, availableModels]);
+
+  // NEW: Effect to trigger initial validation when prop changes
+  useEffect(() => {
+    if (triggerInitialValidation && !initialValidationDone.current) {
+      initialValidationDone.current = true; // Set flag immediately to prevent re-runs
+      Object.entries(providerKeys).forEach(([provider, key]) => {
+        if (key?.trim()) {
+          // Immediately set as validating
+          setValidatingKeys(prev => new Set([...prev, provider as Provider]));
+          // Trigger validation after a small delay to allow UI to update
+          setTimeout(() => {
+            validateProviderKey(provider as Provider, key).catch(console.error);
+          }, 100);
+        } else {
+          // If key is empty, set status to unchecked
+          onProviderStatusChange((prev) => ({ ...prev, [provider]: 'unchecked' }));
+        }
+      });
+    }
+  }, [triggerInitialValidation, providerKeys, validateProviderKey, onProviderStatusChange]);
 
   // Debounced validation refs
   const validationTimeouts = useRef<Record<Provider, NodeJS.Timeout | null>>({
@@ -203,6 +199,18 @@ export function ProviderConfiguration({
       validateProviderKey(provider, key).catch(console.error);
     }
   }, [providerKeys, onProviderKeysChange, validateProviderKey]);
+
+  const toggleKeyVisibility = useCallback((provider: Provider) => {
+    setVisibleKeys(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(provider)) {
+        newSet.delete(provider);
+      } else {
+        newSet.add(provider);
+      }
+      return newSet;
+    });
+  }, []);
 
   const getStatusIcon = (provider: Provider) => {
     if (validatingKeys.has(provider)) {

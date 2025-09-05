@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from 'react';
-import type { ModelConfiguration, ModelConfigurationTemplate } from '~/types/modelConfig';
-import { getTemplatesByProvider, getProviderColor } from '~/types/modelConfig';
-import type { Provider } from './ProviderSettings';
+import type { ModelConfiguration, ModelConfigurationTemplate } from '@/types/modelConfig';
+import { getTemplatesByProvider, getProviderColor } from '@/types/modelConfig';
+import type { Provider } from '@/types/api';
 
 interface ModelConfigurationManagerProps {
   configurations: ModelConfiguration[];

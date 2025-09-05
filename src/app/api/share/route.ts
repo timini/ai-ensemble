@@ -1,9 +1,9 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
-import { saveSharedResponse, getSharedResponse } from '~/server/services/storage';
-import { ShareRequestSchema } from '~/types/share';
-import type { SharedResponse } from '~/types/share';
+import { saveSharedResponse, getSharedResponse } from '@/server/services/storage';
+import { ShareRequestSchema } from '@/types/share';
+import type { SharedResponse } from '@/types/share';
 
 export async function POST(req: NextRequest) {
   try {

@@ -1,18 +1,24 @@
 "use client";
 
 import { useState } from 'react';
-import { getProviderColor } from '~/types/modelConfig';
+import { getProviderColor } from '@/types/modelConfig';
 import type { SelectedModel } from './ModelSelection';
-import type { Provider } from './ProviderSettings';
+import type { Provider } from '@/types/api';
 import { AddModelModal } from './AddModelModal';
+
+interface StreamingData {
+  modelStates: Record<string, 'pending' | 'streaming' | 'complete' | 'error'>;
+}
 
 interface SelectedModelsDisplayProps {
   selectedModels: SelectedModel[];
   validationResults?: Record<string, 'valid' | 'invalid' | 'pending'>;
   availableModels: Record<Provider, string[]>;
-  providerStatus: Record<Provider, 'valid' | 'invalid' | 'unchecked'>;
+  providerStatus: Record<Provider, 'valid' | 'invalid' | 'unchecked' | 'validating'>;
   onAddModel: (model: SelectedModel) => void;
   onRemoveModel: (modelId: string) => void;
+  isStreaming: boolean;
+  streamingData: StreamingData;
 }
 
 export function SelectedModelsDisplay({ 
@@ -21,9 +27,22 @@ export function SelectedModelsDisplay({
   availableModels, 
   providerStatus, 
   onAddModel, 
-  onRemoveModel 
+  onRemoveModel,
+  isStreaming,
+  streamingData,
 }: SelectedModelsDisplayProps) {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  const getStateIcon = (state: string) => {
+    switch (state) {
+      case 'pending': return '⏳';
+      case 'streaming': return '🔄';
+      case 'complete': return '✅';
+      case 'error': return '❌';
+      default: return '⏳';
+    }
+  };
+
   if (selectedModels.length === 0) {
     return (
       <div className="bg-gray-800 border-2 border-dashed border-gray-600 rounded-lg p-8 text-center">
@@ -36,9 +55,7 @@ export function SelectedModelsDisplay({
     );
   }
 
-  const getValidationIcon = (modelId: string) => {
-    if (!validationResults) return '⏳';
-    const status = validationResults[modelId];
+  const getValidationIcon = (status: 'valid' | 'invalid' | 'pending' | 'unchecked') => {
     switch (status) {
       case 'valid': return '✅';
       case 'invalid': return '❌';
@@ -83,14 +100,20 @@ export function SelectedModelsDisplay({
                   #{index + 1}
                 </span>
                 {model.isManual && (
-                  <span className="text-xs bg-blue-600 text-white px-2 py-1 rounded">
+                  <span
+                    className="text-xs bg-blue-600 text-white px-2 py-1 rounded"
+                    title="Response provided manually. No API call."
+                  >
                     Manual
                   </span>
                 )}
               </div>
               <div className="flex items-center gap-2">
                 <div className={`text-sm ${getValidationColor(model.id)}`}>
-                  {getValidationIcon(model.id)}
+                  <div>{isStreaming
+                    ? getStateIcon(streamingData.modelStates[model.id] ?? 'pending')
+                    : getValidationIcon(validationResults ? (validationResults[model.id] ?? 'pending') : 'pending')}
+                  </div>
                 </div>
                 {selectedModels.length > 2 && (
                   <button

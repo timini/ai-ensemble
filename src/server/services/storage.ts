@@ -1,8 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getStorage, ref, uploadString, getDownloadURL } from "firebase/storage";
 
-import { env } from "~/env";
-import { type SharedResponse, SharedResponseSchema } from "~/types/share";
+import { env } from "@/env";
+import { type SharedResponse, SharedResponseSchema } from "@/types/share";
 
 const firebaseConfig = {
   apiKey: env.NEXT_PUBLIC_FIREBASE_API_KEY,

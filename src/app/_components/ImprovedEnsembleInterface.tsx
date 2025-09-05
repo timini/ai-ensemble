@@ -7,9 +7,9 @@ import { ProviderConfiguration } from './ProviderConfiguration';
 import { ModelSelection, type SelectedModel } from './ModelSelection';
 import { SelectedModelsDisplay } from './SelectedModelsDisplay';
 import { ConsensusDiagram } from './ConsensusDiagram';
-import type { Provider } from './ProviderSettings';
-import { getProviderColor } from '~/types/modelConfig';
-import type { AgreementScore } from '~/types/agreement';
+import type { Provider } from '@/types/api';
+import { getProviderColor } from '@/types/modelConfig';
+import type { AgreementScore } from '@/types/agreement';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CopyButton } from './CopyButton';
@@ -50,7 +50,7 @@ export function ImprovedEnsembleInterface() {
     grok: ""
   });
 
-  const [providerStatus, setProviderStatus] = useState<Record<Provider, 'valid' | 'invalid' | 'unchecked'>>({
+  const [providerStatus, setProviderStatus] = useState<Record<Provider, 'valid' | 'invalid' | 'unchecked' | 'validating'>>({
     openai: 'unchecked',
     google: 'unchecked',
     anthropic: 'unchecked',
@@ -71,6 +71,7 @@ export function ImprovedEnsembleInterface() {
   });
   const [manualResponses, setManualResponses] = useState<ManualResponseState>({});
   const [isManualResponseModalOpen, setIsManualResponseModalOpen] = useState(false);
+  const [initialKeysLoadedAndValidated, setInitialKeysLoadedAndValidated] = useState(false); // New state
 
   // --- LocalStorage Persistence ---
   const MODELS_STORAGE_KEY = 'ensemble-selected-models';
@@ -111,6 +112,27 @@ export function ImprovedEnsembleInterface() {
       console.error("Failed to load from localStorage:", error);
     }
   }, []); // Empty dependency array ensures this runs only once on mount
+
+  useEffect(() => {
+    try {
+      const savedKeysJSON = localStorage.getItem('ensemble-provider-keys');
+      if (savedKeysJSON) {
+        const parsedKeys = JSON.parse(savedKeysJSON) as Record<Provider, string>;
+        setProviderKeys(parsedKeys);
+        setInitialKeysLoadedAndValidated(true); // Set new state to true after keys are loaded
+      }
+    } catch (error) {
+      console.error("Failed to load provider keys from localStorage:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('ensemble-provider-keys', JSON.stringify(providerKeys));
+    } catch (error) {
+      console.error("Failed to save provider keys to localStorage:", error);
+    }
+  }, [providerKeys]);
 
   // Load manual responses from localStorage on initial mount
   useEffect(() => {
@@ -185,31 +207,42 @@ export function ImprovedEnsembleInterface() {
     // Create a combined model list for consensus generation
     const allModels = createAllModelsCallback(manualId, provider, modelName);
 
-    // Get the summarizer config
-    const summarizerConfig = selectedModels.find(m => m.id === selectedSummarizer);
+    // Get the summarizer config - look in the combined models list first, then fall back to selectedModels
+    let summarizerConfig = allModels.find(m => m.id === selectedSummarizer);
+    if (!summarizerConfig) {
+      summarizerConfig = selectedModels.find(m => m.id === selectedSummarizer);
+    }
     if (!summarizerConfig) {
       throw new Error("Summarizer configuration not found.");
     }
 
+    // Build configurations including manual models (backend will short-circuit with existingResponses)
+    const manualPlaceholderKey = 'manual-response';
+
     return {
       prompt,
+      // Include all models in configurations
       configurations: allModels.map(m => ({
         id: m.id,
         name: m.name,
         provider: m.provider,
         model: m.model,
       })),
-      keys: createKeysMappingCallback(allModels),
+      // Provide keys for all models; manual models get a placeholder key
+      keys: allModels.reduce<Record<string, string>>((acc, m) => {
+        acc[m.id] = m.id.startsWith('manual-') ? manualPlaceholderKey : (providerKeys[m.provider] ?? '');
+        return acc;
+      }, {}),
       models: createModelsMappingCallback(allModels),
       summarizer: {
         configId: summarizerConfig.id,
         provider: summarizerConfig.provider,
         model: summarizerConfig.model,
       },
-      // Pass the existing responses to regenerate consensus
+      // Pass ALL responses (regular + manual) in existingResponses
       existingResponses: allResponses,
     };
-  }, [createAllResponsesCallback, createAllModelsCallback, createKeysMappingCallback, createModelsMappingCallback, selectedModels, selectedSummarizer, prompt]);
+  }, [createAllResponsesCallback, createAllModelsCallback, createModelsMappingCallback, selectedModels, selectedSummarizer, prompt, providerKeys]);
 
   const parseSSEData = useCallback((line: string) => {
     if (!line.startsWith('data: ')) return null;
@@ -464,19 +497,30 @@ export function ImprovedEnsembleInterface() {
         throw new Error("Summarizer configuration not found.");
       }
 
+      const allModelsForRequest = selectedModels;
+      const manualPlaceholderKey = 'manual-response';
+      const existingResponses = selectedModels
+        .filter(m => m.isManual)
+        .reduce<Record<string, string>>((acc, m) => {
+          if (m.manualResponse) {
+            acc[m.id] = m.manualResponse;
+          }
+          return acc;
+        }, {});
+
       const payload = {
         prompt,
-        configurations: selectedModels.map(m => ({
+        configurations: allModelsForRequest.map(m => ({
           id: m.id,
           name: m.name,
           provider: m.provider,
           model: m.model,
         })),
-        keys: selectedModels.reduce((acc, m) => {
-          acc[m.id] = providerKeys[m.provider];
+        keys: allModelsForRequest.reduce((acc, m) => {
+          acc[m.id] = m.isManual ? manualPlaceholderKey : (providerKeys[m.provider] ?? '');
           return acc;
         }, {} as Record<string, string>),
-        models: selectedModels.reduce((acc, m) => {
+        models: allModelsForRequest.reduce((acc, m) => {
           acc[m.id] = m.model;
           return acc;
         }, {} as Record<string, string>),
@@ -485,6 +529,7 @@ export function ImprovedEnsembleInterface() {
           provider: summarizerConfig.provider,
           model: summarizerConfig.model,
         },
+        existingResponses,
       };
 
       console.log("Sending payload:", JSON.stringify(payload, null, 2));
@@ -500,12 +545,10 @@ export function ImprovedEnsembleInterface() {
       if (!response.ok) {
         let errorMessage = `HTTP error! status: ${response.status}`;
         try {
-          const errorData = await response.json() as { error?: string; details?: string };
-          if (errorData.error) {
-            errorMessage += ` - ${errorData.error}`;
-            if (errorData.details) {
-              console.error('Error details:', errorData.details);
-            }
+          const errorData = await response.json() as { error?: string, details?: string };
+          errorMessage += ` - ${errorData.error ?? 'Unknown error'}`;
+          if (errorData.details) {
+            console.error('Error details:', errorData.details);
           }
         } catch {
           // If we can't parse JSON, use the basic error message
@@ -583,7 +626,7 @@ export function ImprovedEnsembleInterface() {
                       modelStates: { ...prev.modelStates, [data.configId!]: 'error' },
                       modelResponses: {
                         ...prev.modelResponses,
-                        [data.configId!]: `Error: ${data.error!}`
+                        [data.configId!]: `Error: ${data.error as string}`
                       }
                     }));
                   }
@@ -628,13 +671,13 @@ export function ImprovedEnsembleInterface() {
                   break;
               }
             } catch (error) {
-              console.error('Error parsing SSE data:', error);
+              console.error('Error parsing SSE data:', error as Error);
             }
           }
         }
       }
     } catch (error) {
-      console.error('Streaming error:', error);
+      console.error('Streaming error:', error as Error);
     } finally {
       setIsStreaming(false);
     }
@@ -707,9 +750,18 @@ export function ImprovedEnsembleInterface() {
                 providerKeys={providerKeys}
                 onProviderKeysChange={handleProviderKeysChange}
                 providerStatus={providerStatus}
-                onProviderStatusChange={handleProviderStatusChange}
+                onProviderStatusChange={(updater) => {
+                  if (typeof updater === 'function') {
+                    setProviderStatus(prev => updater(prev as Record<Provider, 'valid' | 'invalid' | 'unchecked' | 'validating'>));
+                  } else {
+                    setProviderStatus(prev => ({ ...prev, ...updater }));
+                  }
+                }}
                 availableModels={availableModels}
-                onAvailableModelsChange={handleAvailableModelsChange}
+                onAvailableModelsChange={(models) => {
+                  setAvailableModels(models);
+                }}
+                triggerInitialValidation={initialKeysLoadedAndValidated} // Pass new prop
               />
               <ModelSelection
                 providerKeys={providerKeys}
@@ -728,6 +780,8 @@ export function ImprovedEnsembleInterface() {
             providerStatus={providerStatus}
             onAddModel={handleAddModel}
             onRemoveModel={handleRemoveModel}
+            isStreaming={isStreaming}
+            streamingData={streamingData}
           />
 
           {/* Query Form */}
@@ -746,7 +800,15 @@ export function ImprovedEnsembleInterface() {
                 </label>
                 <select
                   value={selectedSummarizer}
-                  onChange={(e) => setSelectedSummarizer(e.target.value)}
+                  onChange={(e) => {
+                    const chosen = e.target.value;
+                    const chosenModel = selectedModels.find(m => m.id === chosen);
+                    if (chosenModel?.isManual) {
+                      alert('Manual models cannot be used as summarizer. Please select an API model.');
+                      return;
+                    }
+                    setSelectedSummarizer(chosen);
+                  }}
                   className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-white focus:border-blue-500 focus:outline-none"
                 >
                   <option value="">Select summarizer...</option>
@@ -776,7 +838,7 @@ export function ImprovedEnsembleInterface() {
           </form>
 
           {/* Streaming Results */}
-          {(isStreaming || streamingData.consensusState === 'complete') && (
+          {(isStreaming || streamingData.consensusState === 'complete' || Object.keys(manualResponses).length > 0) && (
             <div className="space-y-6">
 
               {/* Consensus Response and Agreement Analysis */}
@@ -869,7 +931,7 @@ export function ImprovedEnsembleInterface() {
               <div>
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Individual Responses</h2>
-                  {selectedModels.every(model => streamingData.modelStates[model.id] === 'complete') && (
+                  {(selectedModels.every(model => streamingData.modelStates[model.id] === 'complete') || !isStreaming) && (
                     <button
                       onClick={() => setIsManualResponseModalOpen(true)}
                       className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
@@ -879,6 +941,7 @@ export function ImprovedEnsembleInterface() {
                   )}
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Regular Model Responses */}
                   {selectedModels.map(model => (
                     <div key={model.id} className="bg-gray-800 p-4 rounded-lg">
                       <div className="flex items-center gap-2 mb-3">
@@ -908,7 +971,7 @@ export function ImprovedEnsembleInterface() {
                   
                   {/* Manual Responses */}
                   {Object.entries(manualResponses).map(([id, manualResponse]) => (
-                    <div key={id} className="bg-gray-800 p-4 rounded-lg border-2 border-blue-500">
+                    <div key={`manual-${id}`} className="bg-gray-800 p-4 rounded-lg border-2 border-blue-500">
                       <div className="flex items-center gap-2 mb-3">
                         <div
                           className="w-3 h-3 rounded-full"

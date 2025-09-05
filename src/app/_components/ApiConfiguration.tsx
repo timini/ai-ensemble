@@ -1,6 +1,7 @@
 "use client";
 
-import { ProviderSettings, type Provider, type KeyStatus } from './ProviderSettings';
+import { ProviderSettings } from './ProviderSettings';
+import type { Provider, KeyStatus } from '@/types/api';
 
 interface ApiConfigurationProps {
   keys: Record<Provider, string>;

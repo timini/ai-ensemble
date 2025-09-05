@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CopyButton } from './CopyButton';
 import { ShareButton } from './ShareButton';
-import { type Provider } from './ProviderSettings';
+import { type Provider } from '@/types/api';
 
 interface EnsembleResponseData {
   consensusResponse: string;

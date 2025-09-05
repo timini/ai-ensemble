@@ -3,7 +3,7 @@ import RootLayout from './layout';
 import { vi } from 'vitest';
 
 // Mock TRPCReactProvider
-vi.mock('~/trpc/react', () => ({
+vi.mock('@/trpc/react', () => ({
   TRPCReactProvider: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="mock-trpc-provider">{children}</div>
   ),

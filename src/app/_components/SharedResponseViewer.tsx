@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import type { SharedResponse } from '~/types/share';
+import type { SharedResponse } from '@/types/share';
 import { CopyButton } from './CopyButton';
 
 interface SharedResponseViewerProps {

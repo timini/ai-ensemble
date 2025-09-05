@@ -1,113 +1,48 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Manual Response Debug', () => {
+  // Use a shared setup to seed localStorage
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
+    await page.evaluate((envVars) => {
+      localStorage.setItem('ensemble-provider-keys', JSON.stringify({
+        openai: envVars.OPENAI_API_KEY || 'test-key',
+        google: envVars.GOOGLE_API_KEY || 'test-key',
+        anthropic: envVars.ANTHROPIC_API_KEY || 'test-key',
+        grok: envVars.GROK_API_KEY || '',
+      }));
+      localStorage.setItem('ensemble-selected-models', JSON.stringify([
+        { id: 'openai-gpt-4', name: 'OpenAI gpt-4', provider: 'openai', model: 'gpt-4' },
+        { id: 'google-gemini-pro', name: 'Google gemini-pro', provider: 'google', model: 'gemini-pro' },
+      ]));
+      localStorage.setItem('ensemble-prompt', 'What is the capital of France?');
+      localStorage.setItem('ensemble-summarizer', 'openai-gpt-4');
+    }, {
+      OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+      GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
+      ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
+      GROK_API_KEY: process.env.GROK_API_KEY,
+    });
+    await page.reload();
+    await expect(page.locator('button:has-text("Select Models (2/8)")')).toBeVisible();
   });
 
   test('should show manual response in agreement analysis when added', async ({ page }) => {
-    // This test will help us debug the manual response issue
-    // We'll check the browser console for any errors
-    
-    // Set up console logging
-    page.on('console', msg => {
-      console.log('Browser console:', msg.text());
-    });
+    // Add a manual response
+    await page.getByRole('button', { name: '+ Add Model' }).click();
+    await page.getByRole('button', { name: 'Manual Response' }).click();
+    await page.getByLabel('Model Name').fill('Manual Model');
+    await page.getByLabel('Response').fill('Paris is the capital of France.');
+    await page.getByRole('button', { name: 'Add Manual Response' }).click();
+    await expect(page.locator('.group').filter({ hasText: 'Manual Model' })).toBeVisible();
 
-    // Configure providers with fake keys
-    await page.click('button:has-text("Configure Providers")');
-    await page.fill('input[placeholder="sk-..."]', 'test-openai-key');
-    await page.fill('input[placeholder="Your Google AI API key"]', 'test-google-key');
-    
-    // Use force click to avoid interception issues
-    await page.click('button:has-text("Done")', { force: true });
+    // Run the query
+    await page.getByRole('button', { name: 'Compare 3 Models' }).click();
 
-    // Wait a bit for the modal to close
-    await page.waitForTimeout(1000);
+    // Wait for agreement analysis to complete
+    await expect(page.getByRole('heading', { name: /Agreement Analysis/ })).toBeVisible({ timeout: 30000 });
 
-    // Check if we can see the configured providers
-    const providerButton = page.locator('button:has-text("Configure Providers")');
-    await expect(providerButton).toBeVisible();
-
-    // Try to select models (this might fail due to fake keys, but that's ok)
-    await page.click('button:has-text("Select Models")');
-    
-    // Wait for the modal to open
-    await page.waitForTimeout(1000);
-
-    // Check if we can see any model checkboxes
-    const modelCheckboxes = page.locator('input[type="checkbox"]');
-    const checkboxCount = await modelCheckboxes.count();
-    console.log(`Found ${checkboxCount} checkboxes`);
-
-    // If we have checkboxes, try to select them
-    if (checkboxCount > 0) {
-      await modelCheckboxes.first().check();
-      if (checkboxCount > 1) {
-        await modelCheckboxes.nth(1).check();
-      }
-    }
-
-    // Close the modal
-    await page.click('button:has-text("Done")', { force: true });
-
-    // Enter a prompt
-    await page.fill('textarea[placeholder="Enter your prompt here..."]', 'Test prompt');
-
-    // Try to submit (this might fail due to fake keys)
-    await page.click('button:has-text("Compare")');
-
-    // Wait a bit to see what happens
-    await page.waitForTimeout(3000);
-
-    // Check if we can see the Add Manual Response button
-    const addManualButton = page.locator('button:has-text("+ Add Manual Response")');
-    const isVisible = await addManualButton.isVisible();
-    console.log(`Add Manual Response button visible: ${isVisible}`);
-
-    if (isVisible) {
-      // Click the button
-      await addManualButton.click();
-
-      // Fill in the manual response
-      await page.selectOption('select#provider', 'anthropic');
-      await page.fill('input#modelName', 'Claude-3-Sonnet');
-      await page.fill('textarea#response', 'This is a test manual response.');
-
-      // Submit the manual response
-      await page.click('button:has-text("Add Response")');
-
-      // Wait for the response to appear
-      await page.waitForTimeout(2000);
-
-      // Check if the manual response appears in the individual responses
-      const manualResponse = page.locator('text=Anthropic - Claude-3-Sonnet (Manual)');
-      const manualVisible = await manualResponse.isVisible();
-      console.log(`Manual response visible: ${manualVisible}`);
-
-      // Check if agreement analysis shows the manual response
-      const agreementSection = page.locator('text=Agreement Analysis');
-      const agreementVisible = await agreementSection.isVisible();
-      console.log(`Agreement Analysis visible: ${agreementVisible}`);
-
-      if (agreementVisible) {
-        // Look for the manual response in the agreement scores
-        const agreementScores = page.locator('[data-testid="agreement-scores"]');
-        const scoresVisible = await agreementScores.isVisible();
-        console.log(`Agreement scores visible: ${scoresVisible}`);
-
-        if (scoresVisible) {
-          const scoreText = await agreementScores.textContent();
-          console.log(`Agreement scores content: ${scoreText}`);
-          
-          // Check if the manual response model name appears in the scores
-          const hasManualModel = scoreText?.includes('Claude-3-Sonnet') || scoreText?.includes('Anthropic');
-          console.log(`Manual model in agreement scores: ${hasManualModel}`);
-        }
-      }
-    }
-
-    // Take a screenshot for debugging
-    await page.screenshot({ path: 'manual-response-debug.png' });
+    // Verify manual response appears in the agreement analysis
+    await expect(page.locator('h3:has-text("Manual Model")')).toBeVisible();
   });
 });

@@ -25,3 +25,17 @@ serviceConfig:
   cpu: 1
   memory: "512Mi"
   concurrency: 80
+
+# Environment variables and secrets available at RUNTIME.
+# These are securely injected into the Cloud Run service and are not available
+# during the build process. This is the recommended approach for all server-side
+# secrets and configurations, as outlined in the solution architecture.
+env:
+  - variable: OPENAI_API_KEY
+    secret: openai-api-key
+  - variable: GOOGLE_API_KEY
+    secret: google-api-key
+  - variable: ANTHROPIC_API_KEY
+    secret: anthropic-api-key
+  - variable: GROK_API_KEY
+    secret: grok-api-key

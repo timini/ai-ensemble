@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import type { ShareRequest } from '~/types/share';
+import type { ShareRequest } from '@/types/share';
 
 interface ShareButtonProps {
   data: ShareRequest;

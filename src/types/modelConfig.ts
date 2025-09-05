@@ -1,4 +1,4 @@
-import type { Provider } from "~/app/_components/ProviderSettings";
+import type { Provider } from "@/types/api";
 
 export interface ModelConfiguration {
   id: string; // Unique identifier like "openai-gpt4" or "google-gemini-pro"

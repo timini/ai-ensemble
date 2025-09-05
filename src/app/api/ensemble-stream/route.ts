@@ -1,11 +1,11 @@
 import { z } from "zod";
 import type { NextRequest } from "next/server";
-import { OpenAIProvider } from "~/server/ai-providers/OpenAIProvider";
-import { GoogleProvider } from "~/server/ai-providers/GoogleProvider";
-import { AnthropicProvider } from "~/server/ai-providers/AnthropicProvider";
-import { GrokProvider } from "~/server/ai-providers/GrokProvider";
-import type { IAIProvider } from "~/server/ai-providers/IAIProvider";
-import { calculateAgreement } from "~/server/api/routers/ensemble";
+import { OpenAIProvider } from "@/server/ai-providers/OpenAIProvider";
+import { GoogleProvider } from "@/server/ai-providers/GoogleProvider";
+import { AnthropicProvider } from "@/server/ai-providers/AnthropicProvider";
+import { GrokProvider } from "@/server/ai-providers/GrokProvider";
+import type { IAIProvider } from "@/server/ai-providers/IAIProvider";
+import { calculateAgreement } from "@/server/api/routers/ensemble";
 
 
 

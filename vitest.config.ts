@@ -1,13 +1,24 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
+import tsconfigPaths from 'vite-tsconfig-paths';
 import path from 'path';
+import { config } from 'dotenv';
+
+// Load test environment variables
+config({ path: '.env.test' });
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tsconfigPaths()],
   test: {
-    environment: 'jsdom',
+    environment: 'jsdom', // Default to jsdom for React component tests
     globals: true,
     setupFiles: './vitest.setup.ts',
+    // Use different environments based on file patterns
+    environmentMatchGlobs: [
+      ['**/*.integration.test.ts', 'node'], // Integration tests use Node
+      ['**/server/**/*.test.ts', 'node'],  // Server tests use Node
+      ['**/api/**/*.test.ts', 'node'],     // API tests use Node
+    ],
     exclude: [
       '**/node_modules/**',
       '**/dist/**',
@@ -33,7 +44,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '~': path.resolve(__dirname, './src'),
+      '@': path.resolve(__dirname, './src'),
     },
   },
 });
