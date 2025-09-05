@@ -15,6 +15,15 @@ import remarkGfm from 'remark-gfm';
 import { CopyButton } from './CopyButton';
 import { ShareButton } from './ShareButton';
 import { ManualResponseModal } from './ManualResponseModal';
+import {
+  createAllResponses,
+  createAllModels,
+  createKeysMapping,
+  createModelsMapping,
+  generateManualResponseId,
+  validateManualResponse,
+  type ManualResponseState,
+} from '../_utils/manualResponseUtils';
 
 interface StreamingData {
   modelResponses: Record<string, string>;
@@ -60,7 +69,7 @@ export function ImprovedEnsembleInterface() {
     consensusState: 'pending',
     agreementState: 'pending',
   });
-  const [manualResponses, setManualResponses] = useState<Record<string, { provider: Provider; modelName: string; response: string }>>({});
+  const [manualResponses, setManualResponses] = useState<ManualResponseState>({});
   const [isManualResponseModalOpen, setIsManualResponseModalOpen] = useState(false);
 
   // --- LocalStorage Persistence ---
@@ -140,61 +149,28 @@ export function ImprovedEnsembleInterface() {
     setAvailableModels(prevModels => ({ ...prevModels, ...newlyFetchedModels }));
   }, []);
 
-  const createAllResponses = useCallback((manualId: string, response: string) => {
-    // Convert manual responses to the expected format (id -> response string)
-    const manualResponseStrings = Object.entries(manualResponses).reduce((acc, [id, manualResponse]) => {
-      acc[id] = manualResponse.response;
-      return acc;
-    }, {} as Record<string, string>);
-
-    return {
-      ...streamingData.modelResponses,
-      ...manualResponseStrings,
-      [manualId]: response
-    };
+  const createAllResponsesCallback = useCallback((manualId: string, response: string) => {
+    return createAllResponses(streamingData.modelResponses, manualResponses, manualId, response);
   }, [streamingData.modelResponses, manualResponses]);
 
-  const createAllModels = useCallback((manualId: string, provider: Provider, modelName: string) => {
-    // Convert existing manual responses to model objects
-    const existingManualModels = Object.entries(manualResponses).map(([id, manualResponse]) => ({
-      id,
-      name: `${manualResponse.provider.charAt(0).toUpperCase() + manualResponse.provider.slice(1)} - ${manualResponse.modelName}`,
-      provider: manualResponse.provider,
-      model: manualResponse.modelName
-    }));
-    
-    return [
-      ...selectedModels,
-      ...existingManualModels,
-      { id: manualId, name: `${provider.charAt(0).toUpperCase() + provider.slice(1)} - ${modelName}`, provider, model: modelName }
-    ];
+  const createAllModelsCallback = useCallback((manualId: string, provider: Provider, modelName: string) => {
+    return createAllModels(selectedModels, manualResponses, manualId, provider, modelName);
   }, [selectedModels, manualResponses]);
 
-  const createKeysMapping = useCallback((allModels: Array<{ id: string; provider: Provider }>) => {
-    return allModels.reduce((acc, m) => {
-      // For manual responses, we don't need API keys
-      if (m.id.startsWith('manual-')) {
-        acc[m.id] = 'manual-response';
-      } else {
-        acc[m.id] = providerKeys[m.provider];
-      }
-      return acc;
-    }, {} as Record<string, string>);
+  const createKeysMappingCallback = useCallback((allModels: Array<{ id: string; provider: Provider }>) => {
+    return createKeysMapping(allModels, providerKeys);
   }, [providerKeys]);
 
-  const createModelsMapping = useCallback((allModels: Array<{ id: string; model: string }>) => {
-    return allModels.reduce((acc, m) => {
-      acc[m.id] = m.model;
-      return acc;
-    }, {} as Record<string, string>);
+  const createModelsMappingCallback = useCallback((allModels: Array<{ id: string; model: string }>) => {
+    return createModelsMapping(allModels);
   }, []);
 
   const createConsensusPayload = useCallback((manualId: string, provider: Provider, modelName: string, response: string) => {
     // Combine all responses (streaming + manual)
-    const allResponses = createAllResponses(manualId, response);
+    const allResponses = createAllResponsesCallback(manualId, response);
 
     // Create a combined model list for consensus generation
-    const allModels = createAllModels(manualId, provider, modelName);
+    const allModels = createAllModelsCallback(manualId, provider, modelName);
 
     // Get the summarizer config
     const summarizerConfig = selectedModels.find(m => m.id === selectedSummarizer);
@@ -210,8 +186,8 @@ export function ImprovedEnsembleInterface() {
         provider: m.provider,
         model: m.model,
       })),
-      keys: createKeysMapping(allModels),
-      models: createModelsMapping(allModels),
+      keys: createKeysMappingCallback(allModels),
+      models: createModelsMappingCallback(allModels),
       summarizer: {
         configId: summarizerConfig.id,
         provider: summarizerConfig.provider,
@@ -324,10 +300,17 @@ export function ImprovedEnsembleInterface() {
     } catch (error) {
       console.error('Error regenerating consensus:', error);
     }
-  }, [createConsensusPayload, processConsensusResponse]);
+  }, [createConsensusPayload, processConsensusResponse, createAllModelsCallback, createAllResponsesCallback, createKeysMappingCallback, createModelsMappingCallback]);
 
   const handleAddManualResponse = useCallback((provider: Provider, modelName: string, response: string) => {
-    const manualId = `manual-${Date.now()}`;
+    // Validate the manual response
+    const validation = validateManualResponse(provider, modelName, response);
+    if (!validation.isValid) {
+      console.error('Invalid manual response:', validation.error);
+      return;
+    }
+
+    const manualId = generateManualResponseId();
     setManualResponses(prev => ({
       ...prev,
       [manualId]: { provider, modelName, response }

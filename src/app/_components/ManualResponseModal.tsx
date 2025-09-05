@@ -51,10 +51,11 @@ export function ManualResponseModal({ isOpen, onClose, onAddResponse }: ManualRe
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="provider" className="block text-sm font-medium text-gray-300 mb-2">
               Provider
             </label>
             <select
+              id="provider"
               value={provider}
               onChange={(e) => setProvider(e.target.value as Provider)}
               className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:border-blue-500 focus:outline-none"
@@ -67,10 +68,11 @@ export function ManualResponseModal({ isOpen, onClose, onAddResponse }: ManualRe
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="modelName" className="block text-sm font-medium text-gray-300 mb-2">
               Model Name
             </label>
             <input
+              id="modelName"
               type="text"
               value={modelName}
               onChange={(e) => setModelName(e.target.value)}
@@ -81,10 +83,11 @@ export function ManualResponseModal({ isOpen, onClose, onAddResponse }: ManualRe
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="response" className="block text-sm font-medium text-gray-300 mb-2">
               Response
             </label>
             <textarea
+              id="response"
               value={response}
               onChange={(e) => setResponse(e.target.value)}
               placeholder="Paste the AI model's response here..."
