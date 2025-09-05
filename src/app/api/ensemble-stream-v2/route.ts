@@ -30,6 +30,7 @@ const StreamRequestSchemaV2 = z.object({
     provider: ProviderEnum,
     model: z.string(),
   }),
+  existingResponses: z.record(z.string()).optional(), // configId -> response
 }).refine((data) => {
   // Ensure all configurations have corresponding keys and models
   return data.configurations.every(config => 
@@ -103,6 +104,19 @@ export async function POST(req: NextRequest) {
 
           // Create streaming promises for each configuration
           const streamPromises = input.configurations.map(config => {
+            // Check if we have an existing response for this config
+            if (input.existingResponses?.[config.id]) {
+              return (async () => {
+                configResponses[config.id] = input.existingResponses![config.id]!;
+                sendData('config_start', { configId: config.id, name: config.name });
+                sendData('config_complete', { 
+                  configId: config.id, 
+                  name: config.name,
+                  response: configResponses[config.id] 
+                });
+              })();
+            }
+
             const provider = providerInstances[config.id];
             if (!provider) {
               return Promise.resolve();

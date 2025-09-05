@@ -14,6 +14,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CopyButton } from './CopyButton';
 import { ShareButton } from './ShareButton';
+import { ManualResponseModal } from './ManualResponseModal';
 
 interface StreamingData {
   modelResponses: Record<string, string>;
@@ -59,6 +60,8 @@ export function ImprovedEnsembleInterface() {
     consensusState: 'pending',
     agreementState: 'pending',
   });
+  const [manualResponses, setManualResponses] = useState<Record<string, { provider: Provider; modelName: string; response: string }>>({});
+  const [isManualResponseModalOpen, setIsManualResponseModalOpen] = useState(false);
 
   // --- LocalStorage Persistence ---
   const MODELS_STORAGE_KEY = 'ensemble-selected-models';
@@ -136,6 +139,146 @@ export function ImprovedEnsembleInterface() {
   const handleAvailableModelsChange = useCallback((newlyFetchedModels: Partial<Record<Provider, string[]>>) => {
     setAvailableModels(prevModels => ({ ...prevModels, ...newlyFetchedModels }));
   }, []);
+
+  const createConsensusPayload = useCallback((manualId: string, provider: Provider, modelName: string, response: string) => {
+    // Combine all responses (streaming + manual)
+    const allResponses = {
+      ...streamingData.modelResponses,
+      [manualId]: response
+    };
+
+    // Create a combined model list for consensus generation
+    const allModels = [
+      ...selectedModels,
+      { id: manualId, name: `${provider.charAt(0).toUpperCase() + provider.slice(1)} - ${modelName}`, provider, model: modelName }
+    ];
+
+    // Get the summarizer config
+    const summarizerConfig = selectedModels.find(m => m.id === selectedSummarizer);
+    if (!summarizerConfig) {
+      throw new Error("Summarizer configuration not found.");
+    }
+
+    return {
+      prompt,
+      configurations: allModels.map(m => ({
+        id: m.id,
+        name: m.name,
+        provider: m.provider,
+        model: m.model,
+      })),
+      keys: allModels.reduce((acc, m) => {
+        // For manual responses, we don't need API keys
+        if (m.id.startsWith('manual-')) {
+          acc[m.id] = 'manual-response';
+        } else {
+          acc[m.id] = providerKeys[m.provider];
+        }
+        return acc;
+      }, {} as Record<string, string>),
+      models: allModels.reduce((acc, m) => {
+        acc[m.id] = m.model;
+        return acc;
+      }, {} as Record<string, string>),
+      summarizer: {
+        configId: summarizerConfig.id,
+        provider: summarizerConfig.provider,
+        model: summarizerConfig.model,
+      },
+      // Pass the existing responses to regenerate consensus
+      existingResponses: allResponses,
+    };
+  }, [streamingData.modelResponses, selectedModels, selectedSummarizer, prompt, providerKeys]);
+
+  const processConsensusResponse = useCallback(async (response: Response) => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const reader = response.body?.getReader();
+    if (!reader) {
+      throw new Error('No response body reader available');
+    }
+
+    const decoder = new TextDecoder();
+    let newConsensusResponse = '';
+    let newAgreementScores: AgreementScore[] = [];
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value);
+      const lines = chunk.split('\n');
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          try {
+            const data = JSON.parse(line.slice(6)) as {
+              type: string;
+              content?: string;
+              scores?: AgreementScore[];
+              [key: string]: unknown;
+            };
+
+            switch (data.type) {
+              case 'consensus_chunk':
+                if (data.content) {
+                  newConsensusResponse += data.content;
+                }
+                break;
+              case 'agreement':
+                if (data.scores) {
+                  newAgreementScores = data.scores;
+                }
+                break;
+            }
+          } catch (error) {
+            console.error('Error parsing SSE data:', error);
+          }
+        }
+      }
+    }
+
+    return { newConsensusResponse, newAgreementScores };
+  }, []);
+
+  const regenerateConsensusWithManualResponse = useCallback(async (manualId: string, provider: Provider, modelName: string, response: string) => {
+    try {
+      const payload = createConsensusPayload(manualId, provider, modelName, response);
+      
+      const response_api = await fetch('/api/ensemble-stream-v2', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const { newConsensusResponse, newAgreementScores } = await processConsensusResponse(response_api);
+
+      // Update the streaming data with new consensus and agreement scores
+      setStreamingData(prev => ({
+        ...prev,
+        consensusResponse: newConsensusResponse,
+        agreementScores: newAgreementScores,
+        consensusState: 'complete',
+        agreementState: 'complete',
+      }));
+
+    } catch (error) {
+      console.error('Error regenerating consensus:', error);
+    }
+  }, [createConsensusPayload, processConsensusResponse]);
+
+  const handleAddManualResponse = useCallback((provider: Provider, modelName: string, response: string) => {
+    const manualId = `manual-${Date.now()}`;
+    setManualResponses(prev => ({
+      ...prev,
+      [manualId]: { provider, modelName, response }
+    }));
+    
+    // Regenerate consensus and agreement analysis
+    void regenerateConsensusWithManualResponse(manualId, provider, modelName, response);
+  }, [regenerateConsensusWithManualResponse]);
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
   const handleStreamingSubmit = async (e: React.FormEvent) => {
@@ -576,7 +719,17 @@ export function ImprovedEnsembleInterface() {
 
               {/* Individual Model Responses */}
               <div>
-                <h2 className="text-2xl font-bold mb-4">Individual Responses</h2>
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold">Individual Responses</h2>
+                  {streamingData.consensusState === 'complete' && (
+                    <button
+                      onClick={() => setIsManualResponseModalOpen(true)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+                    >
+                      + Add Manual Response
+                    </button>
+                  )}
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {selectedModels.map(model => (
                     <div key={model.id} className="bg-gray-800 p-4 rounded-lg">
@@ -604,12 +757,40 @@ export function ImprovedEnsembleInterface() {
                       </div>
                     </div>
                   ))}
+                  
+                  {/* Manual Responses */}
+                  {Object.entries(manualResponses).map(([id, manualResponse]) => (
+                    <div key={id} className="bg-gray-800 p-4 rounded-lg border-2 border-blue-500">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: getProviderColor(manualResponse.provider) }}
+                        />
+                        <h3 className="font-bold text-blue-400">
+                          {manualResponse.provider.charAt(0).toUpperCase() + manualResponse.provider.slice(1)} - {manualResponse.modelName} (Manual)
+                        </h3>
+                        <CopyButton textToCopy={manualResponse.response} />
+                      </div>
+                      <div className="prose prose-sm prose-invert max-w-none">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {manualResponse.response}
+                        </ReactMarkdown>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           )}
         </div>
       </div>
+      
+      {/* Manual Response Modal */}
+      <ManualResponseModal
+        isOpen={isManualResponseModalOpen}
+        onClose={() => setIsManualResponseModalOpen(false)}
+        onAddResponse={handleAddManualResponse}
+      />
     </main>
   );
 }
