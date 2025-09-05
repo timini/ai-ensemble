@@ -143,16 +143,26 @@ export function ImprovedEnsembleInterface() {
   const createAllResponses = useCallback((manualId: string, response: string) => {
     return {
       ...streamingData.modelResponses,
+      ...manualResponses,
       [manualId]: response
     };
-  }, [streamingData.modelResponses]);
+  }, [streamingData.modelResponses, manualResponses]);
 
   const createAllModels = useCallback((manualId: string, provider: Provider, modelName: string) => {
+    // Convert existing manual responses to model objects
+    const existingManualModels = Object.entries(manualResponses).map(([id, manualResponse]) => ({
+      id,
+      name: `${manualResponse.provider.charAt(0).toUpperCase() + manualResponse.provider.slice(1)} - ${manualResponse.modelName}`,
+      provider: manualResponse.provider,
+      model: manualResponse.modelName
+    }));
+    
     return [
       ...selectedModels,
+      ...existingManualModels,
       { id: manualId, name: `${provider.charAt(0).toUpperCase() + provider.slice(1)} - ${modelName}`, provider, model: modelName }
     ];
-  }, [selectedModels]);
+  }, [selectedModels, manualResponses]);
 
   const createKeysMapping = useCallback((allModels: Array<{ id: string; provider: Provider }>) => {
     return allModels.reduce((acc, m) => {
